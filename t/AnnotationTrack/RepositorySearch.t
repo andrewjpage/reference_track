@@ -8,8 +8,8 @@ BEGIN {
     use Test::Most;
     use DBICx::TestDatabase;
     use AnnotationTrack::Schema;
-    use_ok('AnnotationTrack::RepositorySearch');
-    use_ok('AnnotationTrack::RepositoryQueryReport');
+    use_ok('AnnotationTrack::Repository::Search');
+    use_ok('AnnotationTrack::Repository::QueryReport');
 }
 
 # seed data
@@ -19,7 +19,7 @@ $dbh->resultset('Repositories')->create({ name => "existing repo", location => '
 $dbh->resultset('Repositories')->create({ name => "another repo",  location => 'some_location.git'   });
 
 
-ok my $repository_query_report = AnnotationTrack::RepositorySearch->new(
+ok my $repository_query_report = AnnotationTrack::Repository::Search->new(
   environment     => 'staging',
   query           => 'repo'
   ), 'initialise repo search object';
@@ -27,6 +27,6 @@ $repository_query_report->_dbh($dbh); # intercept the database handle and use th
 
 is 'some_location.git
 some_location.git
-', AnnotationTrack::RepositoryQueryReport->new(results => $repository_query_report->_repository_query_results)->_formatted_report(), 'formatted report as expected';
+', AnnotationTrack::Repository::QueryReport->new(results => $repository_query_report->_repository_query_results)->_formatted_report(), 'formatted report as expected';
 
 done_testing();

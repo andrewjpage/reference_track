@@ -12,10 +12,10 @@ my $repository_query_report = AnnotationTrack::RepositorySearch->new(
 $repository_query_report->print_report();
 =cut
 
-package AnnotationTrack::RepositorySearch;
+package AnnotationTrack::Repository::Search;
 use Moose;
 use AnnotationTrack::Database;
-use AnnotationTrack::RepositoryQueryReport;
+use AnnotationTrack::Repository::QueryReport;
 use AnnotationTrack::Repositories;
 
 

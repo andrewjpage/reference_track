@@ -11,7 +11,7 @@ my $repository_query_report = AnnotationTrack::RepositoryQueryReport->new(
 $repository_query_report->print_report();
 =cut
 
-package AnnotationTrack::RepositoryQueryReport;
+package AnnotationTrack::Repository::QueryReport;
 use Moose;
 
 has 'results'           => ( is => 'rw', isa => 'Maybe[ArrayRef]');

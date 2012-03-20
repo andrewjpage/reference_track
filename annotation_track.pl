@@ -24,7 +24,7 @@ package AnnotationTrack;
 BEGIN { unshift(@INC, './modules') }
 use Moose;
 use Getopt::Long;
-use AnnotationTrack::RepositorySearch;
+use AnnotationTrack::Repository::Search;
 
 my ($ENVIRONMENT, $query);
 
@@ -46,7 +46,7 @@ USAGE
 
 $ENVIRONMENT ||= 'production';
 
-my $repository_query_report = AnnotationTrack::RepositorySearch->new(
+my $repository_query_report = AnnotationTrack::Repository::Search->new(
   environment     => $ENVIRONMENT,
   query           => $query
   );
