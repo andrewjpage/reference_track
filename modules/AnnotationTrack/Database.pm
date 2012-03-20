@@ -15,7 +15,8 @@ package AnnotationTrack::Database;
 use Moose;
 use AnnotationTrack::ConfigSettings;
 
-has 'dbh'                => ( is => 'rw',                      lazy_build => 1);
+has 'ro_dbh'             => ( is => 'rw',                      lazy_build => 1);
+has 'rw_dbh'             => ( is => 'rw',                      lazy_build => 1);
 has 'environment'        => ( is => 'rw', isa => 'Str',        default    => 'production');
 has 'password_required'  => ( is => 'rw', isa => 'Bool',       default    => 0);
 
@@ -35,14 +36,26 @@ sub _build__database_settings
   AnnotationTrack::ConfigSettings->new(environment => $self->environment, filename => 'database.yml')->settings();
 }
 
-sub _build_dbh
+sub _create_dbh
 {
-  my($self) = @_;
+  my($self, $username) = @_;
   my %database_settings = %{$self->_database_settings};
  
   my $dbh = AnnotationTrack::Schema->connect(
     "DBI:mysql:host=$database_settings{annotation_track}{host}:port=$database_settings{annotation_track}{port};database=$database_settings{annotation_track}{database}", 
-    $database_settings{annotation_track}{user}, $self->_password, {'RaiseError' => 1, 'PrintError'=>0});
+    $database_settings{annotation_track}{$username}, $self->_password, {'RaiseError' => 1, 'PrintError'=>0});
   return $dbh;
+}
+
+sub _build_ro_dbh
+{
+  my($self) = @_;
+  return $self->_create_dbh("ro_user");;
+}
+
+sub _build_rw_dbh
+{
+  my($self) = @_;
+  return $self->_create_dbh("rw_user");;
 }
 1;

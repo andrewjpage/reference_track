@@ -51,3 +51,4 @@ my $repository_query_report = AnnotationTrack::Repository::Search->new(
   query           => $query
   );
 $repository_query_report->print_report();
+

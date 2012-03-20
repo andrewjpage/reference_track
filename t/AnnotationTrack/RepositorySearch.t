@@ -23,7 +23,7 @@ ok my $repository_query_report = AnnotationTrack::Repository::Search->new(
   environment     => 'staging',
   query           => 'repo'
   ), 'initialise repo search object';
-$repository_query_report->_dbh($dbh); # intercept the database handle and use the test database
+$repository_query_report->_ro_dbh($dbh); # intercept the database handle and use the test database
 
 is 'some_location.git
 some_location.git

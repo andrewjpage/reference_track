@@ -14,28 +14,17 @@ $repository_query_report->print_report();
 
 package AnnotationTrack::Repository::Search;
 use Moose;
-use AnnotationTrack::Database;
 use AnnotationTrack::Repository::QueryReport;
 use AnnotationTrack::Repositories;
+extends 'AnnotationTrack::Repository::Common';
 
-
-has 'environment'               => ( is => 'rw', isa => 'Str',      required   => 1 );
 has 'query'                     => ( is => 'rw', isa => 'Str',      required   => 1 );
-                                
-has '_dbh'                      => ( is => 'rw',                    lazy_build   => 1 );
-has '_repository_query_results' => ( is => 'rw', isa => 'ArrayRef', lazy_build   => 1 );
-
-
-sub _build__dbh
-{
-  my($self)= @_; 
-  AnnotationTrack::Database->new( environment => $self->environment, password_required => 0)->dbh;
-}
+has '_repository_query_results' => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
 
 sub _build__repository_query_results
 {
   my($self)= @_; 
-  AnnotationTrack::Repositories->new( _dbh => $self->_dbh)->find_all_by_name($self->query);
+  AnnotationTrack::Repositories->new( _dbh => $self->_ro_dbh)->find_all_by_name($self->query);
 }
 
 sub print_report
