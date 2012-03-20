@@ -17,7 +17,7 @@ use AnnotationTrack::ConfigSettings;
 
 has 'dbh'                => ( is => 'rw', lazy_build => 1);
 has 'environment'        => ( is => 'rw', isa => 'Str',     default => 'production');
-has 'password_required'  => ( is => 'rw', isa => 'Boolean', default => 0);
+has 'password_required'  => ( is => 'rw', isa => 'Bool',    default => 0);
 
 has '_password'          => ( is => 'rw', isa => 'Str',     lazy_build => 1);
 has '_database_settings' => ( is => 'rw', isa => 'HashRef', lazy_build => 1);
