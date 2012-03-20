@@ -29,7 +29,7 @@ has '_repository_query_results' => ( is => 'rw', isa => 'ArrayRef', lazy_build  
 sub _build__dbh
 {
   my($self)= @_; 
-  AnnotationTrack::Database->new( environment => $self->environment)->dbh;
+  AnnotationTrack::Database->new( environment => $self->environment, password_required => 0)->dbh;
 }
 
 sub _build__repository_query_results
@@ -41,6 +41,6 @@ sub _build__repository_query_results
 sub print_report
 {
   my($self)= @_; 
-  AnnotationTrack::RepositoryQueryReport->new(results => $self->_repository_query_results)->print_report();
+  AnnotationTrack::Repository::QueryReport->new(results => $self->_repository_query_results)->print_report();
 }
 1;
