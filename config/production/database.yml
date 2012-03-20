@@ -1,5 +1,5 @@
 annotation_track:
-  database: annotation_track
+  database: pathogen_annotation_track
   host:     mcs6
   port:     3347
   user:     pathpipe_ro
