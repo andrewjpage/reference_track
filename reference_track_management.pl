@@ -24,24 +24,28 @@ package ReferenceTrack;
 BEGIN { unshift(@INC, './modules') }
 use Moose;
 use Getopt::Long;
-use ReferenceTrack::Repository::Management;
-use ReferenceTrack::Repository::Search;
-use ReferenceTrack::Repository::PublicRelease;
 
-my ($ENVIRONMENT, @repository_details, $public_release_repository);
+use ReferenceTrack::Controller;
+
+my ($ENVIRONMENT, @repository_details, $public_release_repository,@creation_details,$starting_version);
 
 GetOptions ('environment|e=s'    => \$ENVIRONMENT,
             'a|add=s{2}'         => \@repository_details,
             'p|public_release=s'   => \$public_release_repository,
+            'c|create=s{3}'        => \@creation_details,
+            's|starting_version=f' => \$starting_version
             
 );
 
-(@repository_details > 1) or die <<USAGE;
+((@repository_details == 2) || $public_release_repository || (@creation_details == 3 ))or die <<USAGE;
 Usage: $0 [options]
 Query the reference tracking system
 
 reference_track_management.pl --add "My repo name" git://example.com/example.git
 reference_track_management.pl --public_release "My repo name"
+
+reference_track_management.pl --create Plasmodium falciparum 3D7 
+reference_track_management.pl --create Plasmodium falciparum 3D7 --starting_version 0.3
 
  Options:
      -a|add     A name for your repository (can be anything), and the location of the repository.
@@ -50,19 +54,10 @@ USAGE
 
 $ENVIRONMENT ||= 'production';
 
-my $repository_management = ReferenceTrack::Repository::Management->new(environment => $ENVIRONMENT);
-if(@repository_details > 1) 
-{  
-  $repository_management->add($repository_details[0], $repository_details[1]);
-}
-
-if(defined($public_release_repository))
-{
-  my $repository_search = ReferenceTrack::Repository::Search->new(
-    environment     => $ENVIRONMENT,
-    query           => $public_release_repository,
-    );
-  ReferenceTrack::Repository::PublicRelease->new(
-    repository_search_results => $repository_search
-  )->flag_all_as_publically_released();
-}
+ReferenceTrack::Controller->new(
+    environment      => $ENVIRONMENT,
+    add_repository   => \@repository_details,
+    public_release   => $public_release_repository,
+    creation_details => \@creation_details,
+    starting_version => $starting_version
+  )->run();

@@ -13,9 +13,9 @@ $repository_clone->flag_all_as_publically_released();
 
 package ReferenceTrack::Repository::PublicRelease;
 use Moose;
-use ReferenceTrack::Repositories::Search;
+use ReferenceTrack::Repository::Search;
 
-has 'repository_search_results' => ( is => 'ro', isa => 'ReferenceTrack::Repositories::Search',  required   => 1 );
+has 'repository_search_results' => ( is => 'ro', isa => 'ReferenceTrack::Repository::Search',  required   => 1 );
 
 sub flag_all_as_publically_released
 {

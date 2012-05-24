@@ -8,7 +8,7 @@ BEGIN {
     use Test::Most;
     use DBICx::TestDatabase;
     use ReferenceTrack::Schema;
-    use_ok('ReferenceTrack::Repositories::PublicRelease');
+    use_ok('ReferenceTrack::Repository::PublicRelease');
 }
 
 # seed data
@@ -22,7 +22,8 @@ ok( my $repository_search = ReferenceTrack::Repository::Search->new(
       environment     => 'test',
       query           => 'something totally different',
   ),'search for the repo');
-  
+$repository_search->_ro_dbh($dbh); # intercept the database handle and use the test database
+
 ok( ReferenceTrack::Repository::PublicRelease->new(
       repository_search_results => $repository_search
     )->flag_all_as_publically_released(), 'flag one repository as publically released');
@@ -36,7 +37,8 @@ ok( my $repository_search_multiple = ReferenceTrack::Repository::Search->new(
       environment     => 'test',
       query           => 'repo',
   ),'search for multiple repos');
-  
+$repository_search_multiple->_ro_dbh($dbh); # intercept the database handle and use the test database
+
 ok( ReferenceTrack::Repository::PublicRelease->new(
       repository_search_results => $repository_search_multiple
     )->flag_all_as_publically_released(), 'flag multiple repositories as publically released');
