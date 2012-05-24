@@ -15,13 +15,13 @@ package AnnotationTrack::Database;
 use Moose;
 use AnnotationTrack::ConfigSettings;
 
-has 'ro_dbh'             => ( is => 'rw',                      lazy_build => 1);
-has 'rw_dbh'             => ( is => 'rw',                      lazy_build => 1);
+has 'ro_dbh'             => ( is => 'rw',                      lazy => 1, builder => '_build_ro_dbh');
+has 'rw_dbh'             => ( is => 'rw',                      lazy => 1, builder => '_build_rw_dbh');
 has 'environment'        => ( is => 'rw', isa => 'Str',        default    => 'production');
 has 'password_required'  => ( is => 'rw', isa => 'Bool',       default    => 0);
 
-has '_password'          => ( is => 'rw', isa => 'Maybe[Str]', lazy_build => 1);
-has '_database_settings' => ( is => 'rw', isa => 'HashRef',    lazy_build => 1);
+has '_password'          => ( is => 'rw', isa => 'Maybe[Str]', lazy => 1, builder => '_build__password');
+has '_database_settings' => ( is => 'rw', isa => 'HashRef',    lazy => 1, builder => '_build__database_settings');
 
 sub _build__password
 {
@@ -58,4 +58,6 @@ sub _build_rw_dbh
   my($self) = @_;
   return $self->_create_dbh("rw_user");;
 }
+no Moose;
+__PACKAGE__->meta->make_immutable;
 1;

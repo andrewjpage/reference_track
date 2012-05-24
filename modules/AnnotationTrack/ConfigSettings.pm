@@ -17,7 +17,7 @@ use YAML::XS;
 
 has 'environment' => (is => 'rw', isa => 'Str', default => 'test');
 has 'filename' => ( is => 'rw', isa => 'Str', default => 'config.yml' );
-has 'settings' => ( is => 'rw', isa => 'HashRef', lazy_build => 1 );
+has 'settings' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_settings' );
 
 
 sub _build_settings 
@@ -27,5 +27,6 @@ sub _build_settings
 
   return \%config_settings;
 } 
-
+no Moose;
+__PACKAGE__->meta->make_immutable;
 1;

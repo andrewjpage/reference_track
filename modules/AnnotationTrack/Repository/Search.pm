@@ -19,7 +19,7 @@ use AnnotationTrack::Repositories;
 extends 'AnnotationTrack::Repository::Common';
 
 has 'query'                     => ( is => 'rw', isa => 'Str',      required   => 1 );
-has '_repository_query_results' => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
+has '_repository_query_results' => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build__repository_query_results' );
 
 sub _build__repository_query_results
 {
@@ -32,4 +32,7 @@ sub print_report
   my($self)= @_; 
   AnnotationTrack::Repository::QueryReport->new(results => $self->_repository_query_results)->print_report();
 }
+
+no Moose;
+__PACKAGE__->meta->make_immutable;
 1;

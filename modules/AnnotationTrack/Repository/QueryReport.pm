@@ -16,7 +16,7 @@ use Moose;
 
 has 'results'           => ( is => 'rw', isa => 'Maybe[ArrayRef]');
 
-has '_formatted_report' => ( is => 'rw', lazy_build   => 1 );
+has '_formatted_report' => ( is => 'rw', lazy => 1, builder => '_build__formatted_report' );
 
 sub _build__formatted_report
 {
@@ -37,5 +37,6 @@ sub print_report
   return unless(defined($self->results));
   print($self->_formatted_report);
 }
-
+no Moose;
+__PACKAGE__->meta->make_immutable;
 1;

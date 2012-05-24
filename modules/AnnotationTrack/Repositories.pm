@@ -39,5 +39,6 @@ sub find_by_name
    my ($self,$query) = @_;
    $self->_find_all_by_name_result_set($query)->first;
 }
-
+no Moose;
+__PACKAGE__->meta->make_immutable;
 1;

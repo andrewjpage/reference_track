@@ -3,8 +3,8 @@ use Moose;
 use AnnotationTrack::Database;
 
 has 'environment' => ( is => 'rw', isa => 'Str',   required   => 1 );                         
-has '_ro_dbh'     => ( is => 'rw',                 lazy_build => 1 );
-has '_rw_dbh'     => ( is => 'rw',                 lazy_build => 1 );
+has '_ro_dbh'     => ( is => 'rw',                 lazy => 1, builder => '_build__ro_dbh' );
+has '_rw_dbh'     => ( is => 'rw',                 lazy => 1, builder => '_build__rw_dbh' );
 
 sub _build__ro_dbh
 {
@@ -17,5 +17,6 @@ sub _build__rw_dbh
   my($self)= @_; 
   AnnotationTrack::Database->new( environment => $self->environment)->rw_dbh;
 }
-
+no Moose;
+__PACKAGE__->meta->make_immutable;
 1;

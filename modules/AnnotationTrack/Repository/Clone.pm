@@ -17,7 +17,7 @@ use AnnotationTrack::Repositories::Search;
 use Git::Repository;
 
 has 'repository_search_results' => ( is => 'ro', isa => 'AnnotationTrack::Repositories::Search',  required   => 1 );
-has '_repositories'             => ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy_build => 1);
+has '_repositories'             => ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__repositories');
 
 sub _build__repositories
 {
@@ -41,5 +41,6 @@ sub clone
      Git::Repository->run( clone => $repository_location, '.' );
    }
 }
-
+no Moose;
+__PACKAGE__->meta->make_immutable;
 1;
