@@ -2,6 +2,7 @@ CREATE TABLE `repositories` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `location` varchar(255) DEFAULT NULL,
+  `public_release` tinyint(2) NOT NULL DEFAULT '0',
   `latest` tinyint(2) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `name` (`name`)

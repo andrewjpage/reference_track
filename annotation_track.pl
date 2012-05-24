@@ -2,15 +2,15 @@
 
 =head1 NAME
 
-annotation_track.pl
+reference_track.pl
 
 =head1 SYNOPSIS
 
-annotation_track.pl [-e (staging|production) ] -q repo_name
+reference_track.pl [-e (staging|production) ] -q repo_name
 
 =head1 DESCRIPTION
 
-This script allows you to query the annotation tracking database.
+This script allows you to query the reference tracking database.
 
 =head1 CONTACT
 
@@ -19,12 +19,12 @@ path-help@sanger.ac.uk
 =head1 METHODS
 
 =cut
-package AnnotationTrack;
+package ReferenceTrack;
 
 BEGIN { unshift(@INC, './modules') }
 use Moose;
 use Getopt::Long;
-use AnnotationTrack::Repository::Search;
+use ReferenceTrack::Repository::Search;
 
 my ($ENVIRONMENT, $query);
 
@@ -35,9 +35,9 @@ GetOptions ('environment|e=s'    => \$ENVIRONMENT,
 
 $query or die <<USAGE;
 Usage: $0 [options]
-Query the annotation tracking system
+Query the reference tracking system
 
-annotation_track.pl -c -q repo_name
+reference_track.pl -c -q repo_name
 
  Options:
      -q  The name of the repository to look up. It performs a wildcard search '%repo_name%'
@@ -48,7 +48,7 @@ USAGE
 
 $ENVIRONMENT ||= 'production';
 
-my $repository_search = AnnotationTrack::Repository::Search->new(
+my $repository_search = ReferenceTrack::Repository::Search->new(
   environment     => $ENVIRONMENT,
   query           => $query,
   );
@@ -56,7 +56,7 @@ $repository_search->print_report();
 
 if($clone)
 {
-  AnnotationTrack::Repository::Clone->new(
+  ReferenceTrack::Repository::Clone->new(
     repository_search_results => $repository_search
   )->clone();
 }

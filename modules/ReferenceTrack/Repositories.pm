@@ -4,8 +4,8 @@ Repositories - Represents a collection of Repositories
 
 =head1 SYNOPSIS
 
-use AnnotationTrack::Repositories;
-my $repository = AnnotationTrack::Repositories->new(
+use ReferenceTrack::Repositories;
+my $repository = ReferenceTrack::Repositories->new(
   _dbh     => $dbh
   );
 $repository->find_by_name('reponame');
@@ -13,9 +13,9 @@ $repository->find_all_by_name('reponame');
   
 =cut
 
-package AnnotationTrack::Repositories;
+package ReferenceTrack::Repositories;
 use Moose;
-use AnnotationTrack::Schema;
+use ReferenceTrack::Schema;
 use Scalar::Util;
 
 has '_dbh'                         => ( is => 'rw', required   => 1 );

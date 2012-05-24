@@ -4,16 +4,16 @@ Database - Handles setting up database connections
 
 =head1 SYNOPSIS
 
-use AnnotationTrack::Database;
-my $database = AnnotationTrack::Database->new(
+use ReferenceTrack::Database;
+my $database = ReferenceTrack::Database->new(
   environment     => 'test'
 );
 $database->dbh;
 =cut
 
-package AnnotationTrack::Database;
+package ReferenceTrack::Database;
 use Moose;
-use AnnotationTrack::ConfigSettings;
+use ReferenceTrack::ConfigSettings;
 
 has 'ro_dbh'             => ( is => 'rw',                      lazy => 1, builder => '_build_ro_dbh');
 has 'rw_dbh'             => ( is => 'rw',                      lazy => 1, builder => '_build_rw_dbh');
@@ -27,13 +27,13 @@ sub _build__password
 {
   my($self) = @_;
   return undef if($self->password_required == 0);
-  return $ENV{VRTRACK_PASSWORD} || $self->_database_settings->{annotation_track}{password};
+  return $ENV{VRTRACK_PASSWORD} || $self->_database_settings->{reference_track}{password};
 }
 
 sub _build__database_settings
 {
   my($self) = @_;
-  AnnotationTrack::ConfigSettings->new(environment => $self->environment, filename => 'database.yml')->settings();
+  ReferenceTrack::ConfigSettings->new(environment => $self->environment, filename => 'database.yml')->settings();
 }
 
 sub _create_dbh
@@ -41,9 +41,9 @@ sub _create_dbh
   my($self, $username) = @_;
   my %database_settings = %{$self->_database_settings};
  
-  my $dbh = AnnotationTrack::Schema->connect(
-    "DBI:mysql:host=$database_settings{annotation_track}{host}:port=$database_settings{annotation_track}{port};database=$database_settings{annotation_track}{database}", 
-    $database_settings{annotation_track}{$username}, $self->_password, {'RaiseError' => 1, 'PrintError'=>0});
+  my $dbh = ReferenceTrack::Schema->connect(
+    "DBI:mysql:host=$database_settings{reference_track}{host}:port=$database_settings{reference_track}{port};database=$database_settings{reference_track}{database}", 
+    $database_settings{reference_track}{$username}, $self->_password, {'RaiseError' => 1, 'PrintError'=>0});
   return $dbh;
 }
 

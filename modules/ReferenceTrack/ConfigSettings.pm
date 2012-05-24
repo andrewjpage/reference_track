@@ -4,12 +4,12 @@ ConfigSettings.pm   - Return configuration settings
 
 =head1 SYNOPSIS
 
-use AnnotationTrack::ConfigSettings;
-my %config_settings = %{AnnotationTrack::ConfigSettings->new(environment => 'test')->settings()};
+use ReferenceTrack::ConfigSettings;
+my %config_settings = %{ReferenceTrack::ConfigSettings->new(environment => 'test')->settings()};
 
 =cut
 
-package AnnotationTrack::ConfigSettings;
+package ReferenceTrack::ConfigSettings;
 
 use Moose;
 use File::Slurp;
