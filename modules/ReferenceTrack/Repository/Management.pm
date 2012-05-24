@@ -15,6 +15,8 @@ package ReferenceTrack::Repository::Management;
 use Moose;
 use ReferenceTrack::Repository;
 use ReferenceTrack::Repository::Exceptions;
+use ReferenceTrack::Repository::Name;
+use ReferenceTrack::Repository::Version;
 extends 'ReferenceTrack::Repository::Common';
 
 sub add
@@ -27,6 +29,26 @@ sub add
     );
   ReferenceTrack::Repository::Exceptions::NameExists->throw(error => $name." exists in the database already" ) if( $repository->name_exists );
   $repository->create();
+}
+
+sub create
+{
+  my($self, $genus, $subspecies, $strain, $starting_version) = @_;
+  # validate the input parameters
+  # check it doesnt exist already
+  # create a new repository on disk
+  # add to the tracking database
+ 
+  my $repository_name_obj = ReferenceTrack::Repository::Name->new(
+    genus      => $genus,
+    subspecies => $subspecies,
+    strain     => $strain
+   );
+  $repository_name_obj->repository_name();
+ 
+  # validate the version number passed in
+  my $repository_version = ReferenceTrack::Repository::Version->new(version_number => $starting_version)->version_number();
+
 }
 
 no Moose;

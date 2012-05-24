@@ -33,7 +33,7 @@ GetOptions ('environment|e=s'    => \$ENVIRONMENT,
             'a|add=s{2}'         => \@repository_details,
             'p|public_release=s'   => \$public_release_repository,
             'c|create=s{3}'        => \@creation_details,
-            's|starting_version=f' => \$starting_version
+            's|starting_version=s' => \$starting_version
             
 );
 
