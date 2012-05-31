@@ -12,7 +12,6 @@ my %config_settings = %{ReferenceTrack::ConfigSettings->new(environment => 'test
 package ReferenceTrack::ConfigSettings;
 
 use Moose;
-use File::Slurp;
 use YAML::XS;
 
 has 'environment' => (is => 'rw', isa => 'Str', default => 'test');

@@ -27,6 +27,10 @@ subtype 'ReferenceTrack::Repository::Version::Number',
   as 'Num',
   where { ReferenceTrack::Repository::Validate::Version->new()->is_valid($_) };
 
+subtype 'ReferenceTrack::Repository::Name::ShortName',
+  as 'Str',
+  where { length($_) >1 && length($_) <=5 };
+
 
 no Moose;
 no Moose::Util::TypeConstraints;

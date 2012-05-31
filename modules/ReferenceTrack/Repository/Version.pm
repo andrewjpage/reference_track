@@ -23,18 +23,16 @@ sub next_version
 {
   my($self) = @_;
   
-  if($self->version_number  < 1)
-  {
-    my $decimal_part = $self->version_number;
-    $decimal_part =~ s/0\.//;
-    return sprintf("0.%d", $decimal_part +1);
-  }
-  else
-  {
-    # whole number
-    return sprintf("%d", int($self->version_number) +1);
-  }
+  my $decimal_part = $self->version_number;
+  $decimal_part =~ s/0\.//;
+  return sprintf("0.%d", $decimal_part +1);
+}
+
+sub next_major_version
+{
+  my($self) = @_;
   
+  return sprintf("%d", int($self->version_number) +1);
 }
 
 no Moose;

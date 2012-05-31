@@ -24,6 +24,7 @@ use ReferenceTrack::Repository::PublicRelease;
 has 'environment'       => ( is => 'ro', isa => 'Str', required => 1, default => 'test');
 has 'add_repository'    => ( is => 'ro', isa => 'ArrayRef');
 has 'public_release'    => ( is => 'ro', isa => 'Str');
+has 'short_name'        => ( is => 'ro', isa => 'Str');
 has 'creation_details'  => ( is => 'ro', isa => 'ArrayRef');
 has 'starting_version'  => ( is => 'ro', isa => 'Str', default => "0.1");
 
@@ -60,13 +61,13 @@ sub run
 sub _add_existing_repository
 {
    my($self) = @_;
-   $self->_repository_management->add($self->add_repository->[0], $self->add_repository->[1]);
+   $self->_repository_management->add($self->add_repository->[0], $self->add_repository->[1], $self->short_name);
 }
 
 sub _create_reference_repository
 {
   my($self) = @_;
-  $self->_repository_management->create($self->creation_details->[0],$self->creation_details->[1],$self->creation_details->[2] ,$self->starting_version);
+  $self->_repository_management->create($self->creation_details->[0],$self->creation_details->[1],$self->creation_details->[2] ,$self->starting_version, $self->short_name);
 }
 
 sub _make_publically_released

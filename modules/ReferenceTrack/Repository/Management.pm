@@ -21,11 +21,12 @@ extends 'ReferenceTrack::Repository::Common';
 
 sub add
 {
-  my($self, $name, $repository_uri) = @_;
+  my($self, $name, $repository_uri, $short_name) = @_;
   my $repository = ReferenceTrack::Repository->new(
     _dbh     => $self->_rw_dbh,
     name     => $name,
-    location => $repository_uri
+    location => $repository_uri,
+    short_name =>  $short_name
     );
   ReferenceTrack::Repository::Exceptions::NameExists->throw(error => $name." exists in the database already" ) if( $repository->name_exists );
   $repository->create();
@@ -33,7 +34,7 @@ sub add
 
 sub create
 {
-  my($self, $genus, $subspecies, $strain, $starting_version) = @_;
+  my($self, $genus, $subspecies, $strain, $starting_version, $short_name) = @_;
   # validate the input parameters
   # check it doesnt exist already
   # create a new repository on disk
@@ -42,9 +43,12 @@ sub create
   my $repository_name_obj = ReferenceTrack::Repository::Name->new(
     genus      => $genus,
     subspecies => $subspecies,
-    strain     => $strain
+    strain     => $strain,
+    short_name => $short_name
    );
   $repository_name_obj->repository_name();
+  $repository_name_obj->human_readable_name();
+  $repository_name_obj->short_name();
  
   # validate the version number passed in
   my $repository_version = ReferenceTrack::Repository::Version->new(version_number => $starting_version)->version_number();

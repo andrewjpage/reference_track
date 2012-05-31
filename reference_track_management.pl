@@ -27,13 +27,14 @@ use Getopt::Long;
 
 use ReferenceTrack::Controller;
 
-my ($ENVIRONMENT, @repository_details, $public_release_repository,@creation_details,$starting_version);
+my ($ENVIRONMENT, @repository_details, $public_release_repository,@creation_details,$starting_version, $short_name);
 
 GetOptions ('environment|e=s'    => \$ENVIRONMENT,
             'a|add=s{2}'         => \@repository_details,
             'p|public_release=s'   => \$public_release_repository,
             'c|create=s{3}'        => \@creation_details,
-            's|starting_version=s' => \$starting_version
+            's|starting_version=s' => \$starting_version,
+            'n|short_name=s'       => \$short_name,
             
 );
 
@@ -45,7 +46,7 @@ reference_track_management.pl --add "My repo name" git://example.com/example.git
 reference_track_management.pl --public_release "My repo name"
 
 reference_track_management.pl --create Plasmodium falciparum 3D7 
-reference_track_management.pl --create Plasmodium falciparum 3D7 --starting_version 0.3
+reference_track_management.pl --create Plasmodium falciparum 3D7 --starting_version 0.3 --short_name PF3D7
 
  Options:
      -a|add     A name for your repository (can be anything), and the location of the repository.
@@ -59,5 +60,6 @@ ReferenceTrack::Controller->new(
     add_repository   => \@repository_details,
     public_release   => $public_release_repository,
     creation_details => \@creation_details,
-    starting_version => $starting_version
+    starting_version => $starting_version,
+    short_name       => $short_name
   )->run();

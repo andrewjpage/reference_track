@@ -22,11 +22,12 @@ use ReferenceTrack::Repositories;
 has '_dbh'        => ( is => 'rw', required   => 1 );
 has 'name'        => ( is => 'rw', isa => 'Str', required   => 1 );
 has 'location'    => ( is => 'rw', isa => 'Str', required   => 1 );
+has 'short_name'  => ( is => 'rw', isa => 'Str', required   => 1 );
 
 sub create
 {
   my ($self) = @_;
-  $self->_dbh->resultset('Repositories')->create({  name => $self->name, location => $self->location });
+  $self->_dbh->resultset('Repositories')->create({  name => $self->name, location => $self->location, short_name => $self->short_name });
 }
 
 sub name_exists

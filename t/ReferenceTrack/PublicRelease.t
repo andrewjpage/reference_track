@@ -13,9 +13,9 @@ BEGIN {
 
 # seed data
 my $dbh = DBICx::TestDatabase->new('ReferenceTrack::Schema');
-$dbh->resultset('Repositories')->create({ name => "something totally different",  location => 'abc.git'   });
-$dbh->resultset('Repositories')->create({ name => "existing repo", location => 'some_location.git'   });
-$dbh->resultset('Repositories')->create({ name => "another repo",  location => 'some_other_location.git'   });
+$dbh->resultset('Repositories')->create({ name => "something totally different",  location => 'abc.git', short_name => 'ABC1'   });
+$dbh->resultset('Repositories')->create({ name => "existing repo", location => 'some_location.git',short_name => 'ABC2'   });
+$dbh->resultset('Repositories')->create({ name => "another repo",  location => 'some_other_location.git', short_name => 'ABC3'   });
 
 
 ok( my $repository_search = ReferenceTrack::Repository::Search->new(

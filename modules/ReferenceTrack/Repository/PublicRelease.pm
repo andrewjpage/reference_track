@@ -24,6 +24,11 @@ sub flag_all_as_publically_released
   
   for my $repository_row (@{$self->repository_search_results->_repository_query_results})
   {
+    # Lookup repository, find the largest version number
+    # increment the version number
+    # add it to the versionvisiblity table, setting the visibility to be public
+    
+    
     $repository_row->update({ public_release => 1 });
   }
   
