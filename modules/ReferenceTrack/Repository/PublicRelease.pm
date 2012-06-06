@@ -26,17 +26,12 @@ sub flag_all_as_publically_released
   for my $repository_row (@{$self->repository_search_results->_repository_query_results})
   {
     my $repository = ReferenceTrack::Repository::Git::Versions->new(repository => $repository_row);
-    $repository->latest_version();
-
-    # find or create a repository visiblility row
-    $repository_row->update_or_create(
+    $repository_row->version_visibility->update_or_create(
         { 
           version => $repository->latest_version(),
           visible_on_ftp_site => 1,
         }
       );
-        
-    $repository_row->public_release();
   }
   
   return 1;

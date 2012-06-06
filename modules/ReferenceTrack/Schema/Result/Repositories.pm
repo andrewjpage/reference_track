@@ -15,5 +15,6 @@ __PACKAGE__->add_columns(qw/id/,{
                              default_value     => '',
                            });
 __PACKAGE__->set_primary_key('id');
+__PACKAGE__->has_many(version_visibility => 'ReferenceTrack::Schema::Result::VersionVisibility', { 'foreign.repository_id' => 'self.id' });
 
 1;

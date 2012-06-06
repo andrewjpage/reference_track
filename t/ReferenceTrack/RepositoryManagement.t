@@ -27,4 +27,13 @@ $repository_exists->_rw_dbh($dbh); # intercept the database handle and use the t
 throws_ok {$repository_exists->add("test repo", "abc.git","HIJ")} qr/test repo exists in the database/ , 'create a repo';
 
 
+ok my $create_repo  = ReferenceTrack::Repository::Management->new(environment  => 'staging'), 'initialise a repo to create';
+$create_repo->_rw_dbh($dbh); # intercept the database handle and use the test database
+ok(my $repo_row = $create_repo->create("Homo","sapiens", "man",'1.1','MAN'), 'create method');
+
+is($repo_row->name, "Homo sapiens man", 'saved name');
+my @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("Homo sapiens man")->version_visibility->all;
+is(  $x[0]->visible_on_ftp_site, 0, 'Should not be publically visible initially');
+is(  $x[0]->version, '1.1', 'Version should be set to number passed in');
+
 done_testing();

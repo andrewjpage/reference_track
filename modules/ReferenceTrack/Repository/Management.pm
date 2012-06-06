@@ -46,13 +46,14 @@ sub create
     strain     => $strain,
     short_name => $short_name
    );
-  $repository_name_obj->repository_name();
-  $repository_name_obj->human_readable_name();
-  $repository_name_obj->short_name();
- 
-  # validate the version number passed in
-  my $repository_version = ReferenceTrack::Repository::Version->new(version_number => $starting_version)->version_number();
+  my $created_repository_row = $self->add($repository_name_obj->human_readable_name(), $repository_name_obj->repository_name(), $repository_name_obj->short_name());
 
+  my $repository_version = ReferenceTrack::Repository::Version->new(version_number => $starting_version)->version_number();
+  $created_repository_row->version_visibility->create({
+    visible_on_ftp_site => 0, 
+    version => $repository_version
+    });
+  return $created_repository_row;
 }
 
 no Moose;

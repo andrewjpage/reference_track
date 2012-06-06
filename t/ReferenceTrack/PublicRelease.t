@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 use File::Temp;
+use Cwd;
 
 my $tmpdirectory = File::Temp->newdir(CLEANUP => 1)."/abc.git";
 initialise_git_repository($tmpdirectory );
@@ -21,9 +22,25 @@ BEGIN {
 
 # seed data
 my $dbh = DBICx::TestDatabase->new('ReferenceTrack::Schema');
-$dbh->resultset('Repositories')->create({ name => "something totally different",  location => 'file:////'.$tmpdirectory, short_name => 'ABC1'   });
-$dbh->resultset('Repositories')->create({ name => "existing repo", location => 'file:////'.$tmpdirectory2,short_name => 'ABC2'   });
-$dbh->resultset('Repositories')->create({ name => "another repo",  location => 'file:////'.$tmpdirectory3, short_name => 'ABC3'   });
+$dbh->resultset('Repositories')
+    ->create({ name => "something totally different",  location => 'file:////'.$tmpdirectory, short_name => 'ABC1'   })
+    ->version_visibility
+    ->create({
+        visible_on_ftp_site => 0, 
+        version => 0.1
+    });
+$dbh->resultset('Repositories')->create({ name => "existing repo", location => 'file:////'.$tmpdirectory2,short_name => 'ABC2'   })
+    ->version_visibility
+    ->create({
+        visible_on_ftp_site => 0, 
+        version => 0.1
+    });
+$dbh->resultset('Repositories')->create({ name => "another repo",  location => 'file:////'.$tmpdirectory3, short_name => 'ABC3'   })
+    ->version_visibility
+    ->create({
+        visible_on_ftp_site => 0, 
+        version => 0.1
+    });
 
 
 ok( my $repository_search = ReferenceTrack::Repository::Search->new(
@@ -36,10 +53,13 @@ ok( ReferenceTrack::Repository::PublicRelease->new(
       repository_search_results => $repository_search
     )->flag_all_as_publically_released(), 'flag one repository as publically released');
 
+my @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("something totally different")->version_visibility->all;
+is( $x[1]->visible_on_ftp_site, 1, 'repository should be flagged as publically released');
 
-is( ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("something totally different")->public_release, 1, 'repository should be flagged as publically released');
-is( ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("existing repo"              )->public_release, 0, 'other repositorys should be uneffected');
-is( ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("another repo"               )->public_release, 0, 'other repositorys should be uneffected');
+@x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("existing repo"              )->version_visibility->all;
+is( $x[0]->visible_on_ftp_site, 0, 'other repositorys should be uneffected');
+@x =ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("another repo"               )->version_visibility->all;
+is( $x[0]->visible_on_ftp_site, 0, 'other repositorys should be uneffected');
 
 ok( my $repository_search_multiple = ReferenceTrack::Repository::Search->new(
       environment     => 'test',
@@ -51,9 +71,15 @@ ok( ReferenceTrack::Repository::PublicRelease->new(
       repository_search_results => $repository_search_multiple
     )->flag_all_as_publically_released(), 'flag multiple repositories as publically released');
 
-is( ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("something totally different")->public_release, 1, 'should remain unchanged');
-is( ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("existing repo"              )->public_release, 1, 'multiple repos should be publically released');
-is( ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("another repo"               )->public_release, 1, 'multiple repos should be publically released');
+
+@x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("something totally different")->version_visibility->all;
+is( $x[1]->visible_on_ftp_site, 1, 'should remain unchanged');
+
+@x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("existing repo")->version_visibility->all;
+is(  $x[1]->visible_on_ftp_site, 1, 'multiple repos should be publically released');
+
+@x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("another repo"    )->version_visibility->all;
+is( $x[1]->visible_on_ftp_site, 1, 'multiple repos should be publically released');
 
 done_testing();
 

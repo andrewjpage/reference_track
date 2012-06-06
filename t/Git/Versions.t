@@ -15,10 +15,10 @@ BEGIN {
     use_ok('ReferenceTrack::Repository::Git::Versions');
     
     $fake_repository = Test::MockObject->new();
-    $fake_repository->fake_module( 'ReferenceTrack::Repository', test => sub{1} );
-    $fake_repository->fake_new( 'ReferenceTrack::Repository' );
+    $fake_repository->fake_module( 'ReferenceTrack::Schema::Result::Repositories', test => sub{1} );
+    $fake_repository->fake_new( 'ReferenceTrack::Schema::Result::Repositories' );
     $fake_repository->mock('location', sub{ 'file:////'.$tmpdirectory });
-    $fake_repository->set_isa('ReferenceTrack::Repository');
+    $fake_repository->set_isa('ReferenceTrack::Schema::Result::Repositories');
 }
 
 initialise_git_repository($tmpdirectory );
