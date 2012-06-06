@@ -2,6 +2,14 @@
 use strict;
 use warnings;
 use Data::Dumper;
+use File::Temp;
+
+my $tmpdirectory = File::Temp->newdir(CLEANUP => 1)."/abc.git";
+initialise_git_repository($tmpdirectory );
+my $tmpdirectory2 = File::Temp->newdir(CLEANUP => 1)."/some_location.git";
+initialise_git_repository($tmpdirectory2 );
+my $tmpdirectory3 = File::Temp->newdir(CLEANUP => 1)."/some_other_location.git";
+initialise_git_repository($tmpdirectory3 );
 
 BEGIN { unshift(@INC, './modules') }
 BEGIN {
@@ -13,9 +21,9 @@ BEGIN {
 
 # seed data
 my $dbh = DBICx::TestDatabase->new('ReferenceTrack::Schema');
-$dbh->resultset('Repositories')->create({ name => "something totally different",  location => 'abc.git', short_name => 'ABC1'   });
-$dbh->resultset('Repositories')->create({ name => "existing repo", location => 'some_location.git',short_name => 'ABC2'   });
-$dbh->resultset('Repositories')->create({ name => "another repo",  location => 'some_other_location.git', short_name => 'ABC3'   });
+$dbh->resultset('Repositories')->create({ name => "something totally different",  location => 'file:////'.$tmpdirectory, short_name => 'ABC1'   });
+$dbh->resultset('Repositories')->create({ name => "existing repo", location => 'file:////'.$tmpdirectory2,short_name => 'ABC2'   });
+$dbh->resultset('Repositories')->create({ name => "another repo",  location => 'file:////'.$tmpdirectory3, short_name => 'ABC3'   });
 
 
 ok( my $repository_search = ReferenceTrack::Repository::Search->new(
@@ -49,3 +57,17 @@ is( ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("another repo
 
 done_testing();
 
+
+sub initialise_git_repository
+{
+   my($tmpdirectory) = @_;
+   my $test_directory = getcwd();
+  `git init $tmpdirectory`;
+  `cd $tmpdirectory && touch "temp_file"`;
+  `cd $tmpdirectory && git add temp_file`;
+  `cd $tmpdirectory && git commit -m "init"`;
+  `cd $tmpdirectory && git branch 0.1`;
+  `cd $tmpdirectory && git branch 0.2`;
+  `cd $tmpdirectory && git branch 0.3`;
+  `cd $test_directory`;
+}

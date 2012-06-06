@@ -22,10 +22,19 @@ has 'version_number' => ( is => 'ro', isa => 'ReferenceTrack::Repository::Versio
 sub next_version
 {
   my($self) = @_;
-  
-  my $decimal_part = $self->version_number;
-  $decimal_part =~ s/0\.//;
-  return sprintf("0.%d", $decimal_part +1);
+  my $major_version = 0;
+  my $minor_version = 0; 
+
+  if($self->version_number =~/^[\d]+\.([\d]+)$/)
+  {
+    $minor_version = $1;
+  }
+  if($self->version_number =~/^([\d]+)(\.[\d]+)?$/)
+  {
+    $major_version = $1;
+  }
+
+  return sprintf("%d.%d", $major_version, $minor_version +1);
 }
 
 sub next_major_version
@@ -33,6 +42,12 @@ sub next_major_version
   my($self) = @_;
   
   return sprintf("%d", int($self->version_number) +1);
+}
+
+sub version_regex
+{
+  my($class) = @_;
+  return '[\d]+(\.[\d]+)?';
 }
 
 no Moose;

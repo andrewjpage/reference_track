@@ -14,4 +14,5 @@ __PACKAGE__->add_columns(qw/id/,{
                              default_value     => '',
                            });
 __PACKAGE__->set_primary_key('id');
+__PACKAGE__->belongs_to(repository => 'ReferenceTrack::Schema::Result::Repositories', { 'foreign.id' => 'self.repository_id' });
 1;

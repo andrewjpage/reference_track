@@ -14,6 +14,7 @@ $repository_clone->flag_all_as_publically_released();
 package ReferenceTrack::Repository::PublicRelease;
 use Moose;
 use ReferenceTrack::Repository::Search;
+use ReferenceTrack::Repository::Git::Versions;
 
 has 'repository_search_results' => ( is => 'ro', isa => 'ReferenceTrack::Repository::Search',  required   => 1 );
 
@@ -24,12 +25,18 @@ sub flag_all_as_publically_released
   
   for my $repository_row (@{$self->repository_search_results->_repository_query_results})
   {
-    # Lookup repository, find the largest version number
-    # increment the version number
-    # add it to the versionvisiblity table, setting the visibility to be public
-    
-    
-    $repository_row->update({ public_release => 1 });
+    my $repository = ReferenceTrack::Repository::Git::Versions->new(repository => $repository_row);
+    $repository->latest_version();
+
+    # find or create a repository visiblility row
+    $repository_row->update_or_create(
+        { 
+          version => $repository->latest_version(),
+          visible_on_ftp_site => 1,
+        }
+      );
+        
+    $repository_row->public_release();
   }
   
   return 1;
