@@ -44,5 +44,5 @@ sub initialise_git_repository
   `cd $tmpdirectory && git branch 0.1`;
   `cd $tmpdirectory && git branch 0.2`;
   `cd $tmpdirectory && git branch 0.3`;
-  `cd $test_directory`;
+  chdir($test_directory);
 }

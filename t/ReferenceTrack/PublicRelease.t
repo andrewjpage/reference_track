@@ -5,11 +5,17 @@ use Data::Dumper;
 use File::Temp;
 use Cwd;
 
-my $tmpdirectory = File::Temp->newdir(CLEANUP => 1)."/abc.git";
+
+my $tmpdirectory_obj = File::Temp->newdir(CLEANUP => 1);
+my $tmpdirectory = $tmpdirectory_obj->dirname();
 initialise_git_repository($tmpdirectory );
-my $tmpdirectory2 = File::Temp->newdir(CLEANUP => 1)."/some_location.git";
+
+my $tmpdirectory2_obj = File::Temp->newdir(CLEANUP => 1);
+my $tmpdirectory2 = $tmpdirectory2_obj->dirname();
 initialise_git_repository($tmpdirectory2 );
-my $tmpdirectory3 = File::Temp->newdir(CLEANUP => 1)."/some_other_location.git";
+
+my $tmpdirectory3_obj = File::Temp->newdir(CLEANUP => 1);
+my $tmpdirectory3 = $tmpdirectory3_obj->dirname();
 initialise_git_repository($tmpdirectory3 );
 
 BEGIN { unshift(@INC, './modules') }
@@ -95,5 +101,5 @@ sub initialise_git_repository
   `cd $tmpdirectory && git branch 0.1`;
   `cd $tmpdirectory && git branch 0.2`;
   `cd $tmpdirectory && git branch 0.3`;
-  `cd $test_directory`;
+  chdir($test_directory);
 }
