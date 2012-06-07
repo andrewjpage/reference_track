@@ -31,6 +31,9 @@ subtype 'ReferenceTrack::Repository::Name::ShortName',
   as 'Str',
   where { length($_) >1 && length($_) <=5 };
 
+subtype 'ReferenceTrack::DirectoryName',
+  as 'Str',
+  where { (-d $_) };
 
 no Moose;
 no Moose::Util::TypeConstraints;

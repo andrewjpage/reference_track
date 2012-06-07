@@ -17,7 +17,11 @@ use ReferenceTrack::Repository;
 use ReferenceTrack::Repository::Exceptions;
 use ReferenceTrack::Repository::Name;
 use ReferenceTrack::Repository::Version;
+use ReferenceTrack::Repository::Git::Remote;
 extends 'ReferenceTrack::Repository::Common';
+
+has 'repository_root'  => ( is => 'ro', isa => 'Str', default => '/nfs/pathnfs02/references');
+
 
 sub add
 {
@@ -35,10 +39,8 @@ sub add
 sub create
 {
   my($self, $genus, $subspecies, $strain, $starting_version, $short_name) = @_;
-  # validate the input parameters
-  # check it doesnt exist already
+  
   # create a new repository on disk
-  # add to the tracking database
  
   my $repository_name_obj = ReferenceTrack::Repository::Name->new(
     genus      => $genus,
@@ -46,14 +48,33 @@ sub create
     strain     => $strain,
     short_name => $short_name
    );
-  my $created_repository_row = $self->add($repository_name_obj->human_readable_name(), $repository_name_obj->repository_name(), $repository_name_obj->short_name());
+  my $full_repository_path = $self->_full_repository_path($genus, $subspecies, $repository_name_obj->repository_name() );
+  my $created_repository_row = $self->add($repository_name_obj->human_readable_name(), $self->_repository_uri($full_repository_path), $repository_name_obj->short_name());
 
   my $repository_version = ReferenceTrack::Repository::Version->new(version_number => $starting_version)->version_number();
   $created_repository_row->version_visibility->create({
     visible_on_ftp_site => 0, 
     version => $repository_version
     });
+    
+  ReferenceTrack::Repository::Git::Remote->new(
+      root  => $full_repository_path,
+      name => $repository_name_obj->repository_name()
+    )->create();
+
   return $created_repository_row;
+}
+
+sub _full_repository_path
+{
+  my($self, $genus, $subspecies, $repository_name) = @_;
+  return join('/',($self->repository_root, $genus, $subspecies, $repository_name));
+}
+
+sub _repository_uri
+{
+  my($self,$full_repository_path) = @_;
+  return 'file:////'.$full_repository_path;
 }
 
 no Moose;

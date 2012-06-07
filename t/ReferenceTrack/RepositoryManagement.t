@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+use File::Temp;
 
 BEGIN { unshift(@INC, './modules') }
 BEGIN {
@@ -26,12 +27,16 @@ ok my $repository_exists  = ReferenceTrack::Repository::Management->new(environm
 $repository_exists->_rw_dbh($dbh); # intercept the database handle and use the test database
 throws_ok {$repository_exists->add("test repo", "abc.git","HIJ")} qr/test repo exists in the database/ , 'create a repo';
 
+my $tmpdirectory_obj = File::Temp->newdir(CLEANUP => 1);
+my $tmpdirectory = $tmpdirectory_obj->dirname();
 
-ok my $create_repo  = ReferenceTrack::Repository::Management->new(environment  => 'staging'), 'initialise a repo to create';
+ok my $create_repo  = ReferenceTrack::Repository::Management->new(environment  => 'staging', repository_root => $tmpdirectory), 'initialise a repo to create';
 $create_repo->_rw_dbh($dbh); # intercept the database handle and use the test database
 ok(my $repo_row = $create_repo->create("Homo","sapiens", "man",'1.1','MAN'), 'create method');
+ok(-d $tmpdirectory."/Homo/sapiens/Homo_sapiens_man.git", 'Remote repository created');
 
 is($repo_row->name, "Homo sapiens man", 'saved name');
+is($repo_row->location, 'file:////'.$tmpdirectory."/Homo/sapiens/Homo_sapiens_man.git", 'saved location');
 my @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("Homo sapiens man")->version_visibility->all;
 is(  $x[0]->visible_on_ftp_site, 0, 'Should not be publically visible initially');
 is(  $x[0]->version, '1.1', 'Version should be set to number passed in');
