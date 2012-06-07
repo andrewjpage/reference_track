@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::MockObject;
-use Test::MockModule;
+#use Test::MockModule;
 use Test::Exception;
 
 BEGIN { unshift(@INC, './modules') }
