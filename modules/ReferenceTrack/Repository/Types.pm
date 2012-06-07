@@ -29,7 +29,7 @@ subtype 'ReferenceTrack::Repository::Version::Number',
 
 subtype 'ReferenceTrack::Repository::Name::ShortName',
   as 'Str',
-  where { length($_) >1 && length($_) <=5 };
+  where { ReferenceTrack::Repository::Validate::Name->new()->is_short_name_valid($_) };
 
 subtype 'ReferenceTrack::DirectoryName',
   as 'Str',

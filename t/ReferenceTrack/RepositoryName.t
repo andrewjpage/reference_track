@@ -17,6 +17,7 @@ is($repo->human_readable_name(), 'Abc efg hij', 'human readable repository name'
 
 
 dies_ok( sub {ReferenceTrack::Repository::Name->new(genus => 'ABC***',subspecies => 'EFG',strain   => 'HIJ', short_name => 'ABC')},'invalid genus dies');
+dies_ok( sub {ReferenceTrack::Repository::Name->new(genus => 'A',subspecies => 'EFG',strain   => 'HIJ', short_name => 'ABC')},'invalid genus dies');
 dies_ok( sub {ReferenceTrack::Repository::Name->new(genus => 'ABC',subspecies => 'EFG.---',strain   => 'HIJ', short_name => 'ABC')},'invalid subspecies dies');
 dies_ok( sub {ReferenceTrack::Repository::Name->new(genus => 'ABC',subspecies => 'EFG',strain   => ' XXXX', short_name => 'ABC')},'invalid strain dies');
 dies_ok( sub {ReferenceTrack::Repository::Name->new(genus => 'ABC',subspecies => 'EFG',strain   => 'X', short_name => 'ABC')},'invalid strain dies too short');

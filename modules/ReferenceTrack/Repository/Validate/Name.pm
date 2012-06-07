@@ -43,7 +43,7 @@ sub is_strain_valid
 sub is_short_name_valid
 {
   my($self, $input_string) = @_;
-  return 0 if( $input_string =~ /[\W]/ || length($input_string) <= 1 || lc($input_string) ne $input_string);
+  return 0 if( $input_string =~ /[\W]/ || length($input_string) <= 1 || length($input_string) > 5);
   
   return 1;
 }
