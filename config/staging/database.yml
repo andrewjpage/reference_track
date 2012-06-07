@@ -1,5 +1,6 @@
-annotation_track:
-  database: pathogen_annotation_track_test
+reference_track:
+  database: pathogen_reference_track_test
   host:     mcs6
   port:     3346
-  user:     pathpipe_ro
+  ro_user:     pathpipe_ro
+  rw_user:     pathpipe_rw
