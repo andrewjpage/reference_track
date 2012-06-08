@@ -35,7 +35,7 @@ ok( ReferenceTrack::Controller->new(database_settings => \%database_settings)->r
 ok( ReferenceTrack::Controller->new(
       database_settings => \%database_settings,
       add_repository   => ['abc','efg'],
-      public_release   => 'repo',
+      public_release   => 1,
       creation_details => ['genus', 'species','subspecies'],
       starting_version => 123
     )->run(), "Initialise controller with all parameters");

@@ -23,7 +23,7 @@ use ReferenceTrack::Repository::PublicRelease;
 
 has 'database_settings' => ( is => 'ro', isa => 'HashRef', required => 1);
 has 'add_repository'    => ( is => 'ro', isa => 'ArrayRef');
-has 'public_release'    => ( is => 'ro', isa => 'Str');
+has 'public_release'    => ( is => 'ro', isa => 'Bool', default => 0);
 has 'short_name'        => ( is => 'ro', isa => 'Str');
 has 'creation_details'  => ( is => 'ro', isa => 'ArrayRef');
 has 'starting_version'  => ( is => 'ro', isa => 'Str', default => "0.1");

@@ -26,10 +26,10 @@ use Moose;
 use Getopt::Long;
 use ReferenceTrack::Repository::Search;
 
-my ($database, $query);
+my ($database, $query, $clone);
 
 GetOptions ('database|d=s'    => \$database,
-            'query|q=s'          => \$query
+            'query|q=s'          => \$query,
             'clone|c'          => \$clone
 );
 
