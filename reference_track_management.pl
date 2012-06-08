@@ -27,9 +27,9 @@ use Getopt::Long;
 
 use ReferenceTrack::Controller;
 
-my ($ENVIRONMENT, @repository_details, $public_release_repository,@creation_details,$starting_version, $short_name);
+my ($database, @repository_details, $public_release_repository,@creation_details,$starting_version, $short_name);
 
-GetOptions ('environment|e=s'    => \$ENVIRONMENT,
+GetOptions ('database|d=s'    => \$database,
             'a|add=s{2}'         => \@repository_details,
             'p|public_release=s'   => \$public_release_repository,
             'c|create=s{3}'        => \@creation_details,
@@ -53,13 +53,20 @@ reference_track_management.pl --create Plasmodium falciparum 3D7 --starting_vers
 USAGE
 ;
 
-$ENVIRONMENT ||= 'production';
+$database ||= 'pathogen_reference_track';
+my %database_settings;
+$database_settings{database} = $database ;
+$database_settings{host} = $ENV{VRTRACK_HOST} || 'mcs6';
+$database_settings{port} = $ENV{VRTRACK_PORT} || 3347;
+$database_settings{ro_user} = $ENV{VRTRACK_RO_USER}  || 'pathpipe_ro';
+$database_settings{rw_user} =  $ENV{VRTRACK_RW_USER} || 'pathpipe_rw';
+$database_settings{password} = $ENV{VRTRACK_PASSWORD};
 
 ReferenceTrack::Controller->new(
-    environment      => $ENVIRONMENT,
-    add_repository   => \@repository_details,
-    public_release   => $public_release_repository,
-    creation_details => \@creation_details,
-    starting_version => $starting_version,
-    short_name       => $short_name
+    database_settings => \%database_settings,
+    add_repository    => \@repository_details,
+    public_release    => $public_release_repository,
+    creation_details  => \@creation_details,
+    starting_version  => $starting_version,
+    short_name        => $short_name
   )->run();

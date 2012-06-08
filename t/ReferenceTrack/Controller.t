@@ -28,10 +28,12 @@ BEGIN {
     $fake_repo_public_release->mock('flag_all_as_publically_released', sub{ 1 });
    
 }
-ok( ReferenceTrack::Controller->new()->run(), "Initialise controller with no parameters");
+my %database_settings = (host => "localhost", port => 3306);
+
+ok( ReferenceTrack::Controller->new(database_settings => \%database_settings)->run(), "Initialise controller with no parameters");
 
 ok( ReferenceTrack::Controller->new(
-      environment      => 'test',
+      database_settings => \%database_settings,
       add_repository   => ['abc','efg'],
       public_release   => 'repo',
       creation_details => ['genus', 'species','subspecies'],

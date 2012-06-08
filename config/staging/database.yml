@@ -1,6 +1,0 @@
-reference_track:
-  database: pathogen_reference_track_test
-  host:     mcs6
-  port:     3346
-  ro_user:     pathpipe_ro
-  rw_user:     pathpipe_rw

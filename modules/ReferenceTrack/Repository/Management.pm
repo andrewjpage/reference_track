@@ -6,7 +6,7 @@ Management - A driver class for managment functions
 
 use ReferenceTrack::Management;
 my $repo_management = ReferenceTrack::Management->new(
-  environment  => 'test',
+  database_settings     => \%databasesettings
   );
 $repo_management->add("name", "repo");
 =cut

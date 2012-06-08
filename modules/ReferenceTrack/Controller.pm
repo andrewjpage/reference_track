@@ -6,7 +6,7 @@ Controller - Represents a collection of Controller
 
 use ReferenceTrack::Controller;
 ReferenceTrack::Controller->new(
-    environment      => $ENVIRONMENT,
+    database_settings => \%dbsettings,
     add_repository   => \@repository_details,
     public_release   => $public_release_repository,
     creation_details => \@creation_details,
@@ -21,7 +21,7 @@ use ReferenceTrack::Repository::Management;
 use ReferenceTrack::Repository::Search;
 use ReferenceTrack::Repository::PublicRelease;
 
-has 'environment'       => ( is => 'ro', isa => 'Str', required => 1, default => 'test');
+has 'database_settings' => ( is => 'ro', isa => 'HashRef', required => 1);
 has 'add_repository'    => ( is => 'ro', isa => 'ArrayRef');
 has 'public_release'    => ( is => 'ro', isa => 'Str');
 has 'short_name'        => ( is => 'ro', isa => 'Str');
@@ -33,7 +33,7 @@ has '_repository_management' => ( is => 'ro', lazy => 1, builder => '_build__rep
 sub _build__repository_management
 {
     my($self) = @_;
-    ReferenceTrack::Repository::Management->new(environment => $self->environment);
+    ReferenceTrack::Repository::Management->new(database_settings => $self->database_settings);
 }
 
 sub run
@@ -74,8 +74,8 @@ sub _make_publically_released
 {
   my($self) = @_;
   my $repository_search = ReferenceTrack::Repository::Search->new(
-    environment     => $self->environment,
-    query           => $self->public_release,
+    database_settings => $self->database_settings,
+    query             => $self->public_release,
     );
   ReferenceTrack::Repository::PublicRelease->new(
     repository_search_results => $repository_search

@@ -6,7 +6,7 @@ RepositorySearch - Represents a collection of RepositorySearch
 
 use ReferenceTrack::RepositorySearch;
 my $repository_query_report = ReferenceTrack::RepositorySearch->new(
-  environment     => 'test',
+  database_settings     => \%databasesettings,
   query           => 'abc123'
   );
 $repository_query_report->print_report();

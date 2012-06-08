@@ -13,10 +13,10 @@ $repository_clone->clone();
 
 package ReferenceTrack::Repository::Clone;
 use Moose;
-use ReferenceTrack::Repositories::Search;
+use ReferenceTrack::Repository::Search;
 use Git::Repository;
 
-has 'repository_search_results' => ( is => 'ro', isa => 'ReferenceTrack::Repositories::Search',  required   => 1 );
+has 'repository_search_results' => ( is => 'ro', isa => 'ReferenceTrack::Repository::Search',  required   => 1 );
 has '_repositories'             => ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__repositories');
 
 sub _build__repositories

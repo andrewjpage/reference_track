@@ -26,6 +26,8 @@ BEGIN {
     use_ok('ReferenceTrack::Repository::PublicRelease');
 }
 
+my %database_settings = (host => "localhost", port => 3306);
+
 # seed data
 my $dbh = DBICx::TestDatabase->new('ReferenceTrack::Schema');
 $dbh->resultset('Repositories')
@@ -50,8 +52,8 @@ $dbh->resultset('Repositories')->create({ name => "another repo",  location => '
 
 
 ok( my $repository_search = ReferenceTrack::Repository::Search->new(
-      environment     => 'test',
-      query           => 'something totally different',
+      database_settings => \%database_settings,
+      query             => 'something totally different',
   ),'search for the repo');
 $repository_search->_ro_dbh($dbh); # intercept the database handle and use the test database
 
@@ -68,7 +70,7 @@ is( $x[0]->visible_on_ftp_site, 0, 'other repositorys should be uneffected');
 is( $x[0]->visible_on_ftp_site, 0, 'other repositorys should be uneffected');
 
 ok( my $repository_search_multiple = ReferenceTrack::Repository::Search->new(
-      environment     => 'test',
+      database_settings => \%database_settings,
       query           => 'repo',
   ),'search for multiple repos');
 $repository_search_multiple->_ro_dbh($dbh); # intercept the database handle and use the test database
