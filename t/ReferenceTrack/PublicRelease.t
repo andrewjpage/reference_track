@@ -35,13 +35,13 @@ $dbh->resultset('Repositories')
     ->version_visibility
     ->create({
         visible_on_ftp_site => 0, 
-        version => 0.1
+        version => 0.3
     });
 $dbh->resultset('Repositories')->create({ name => "existing repo", location => 'file:////'.$tmpdirectory2,short_name => 'ABC2'   })
     ->version_visibility
     ->create({
         visible_on_ftp_site => 0, 
-        version => 0.1
+        version => 0.2
     });
 $dbh->resultset('Repositories')->create({ name => "another repo",  location => 'file:////'.$tmpdirectory3, short_name => 'ABC3'   })
     ->version_visibility
@@ -62,7 +62,8 @@ ok( ReferenceTrack::Repository::PublicRelease->new(
     )->flag_all_as_publically_released(), 'flag one repository as publically released');
 
 my @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("something totally different")->version_visibility->all;
-is( $x[1]->visible_on_ftp_site, 1, 'repository should be flagged as publically released');
+is( $x[0]->visible_on_ftp_site, 1, 'repository should be flagged as publically released');
+is( $x[0]->version, "0.3", 'should remain unchanged');
 
 @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("existing repo"              )->version_visibility->all;
 is( $x[0]->visible_on_ftp_site, 0, 'other repositorys should be uneffected');
@@ -81,13 +82,16 @@ ok( ReferenceTrack::Repository::PublicRelease->new(
 
 
 @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("something totally different")->version_visibility->all;
-is( $x[1]->visible_on_ftp_site, 1, 'should remain unchanged');
+is( $x[0]->visible_on_ftp_site, 1, 'should remain unchanged');
+is( $x[0]->version, "0.3", 'should remain unchanged');
 
 @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("existing repo")->version_visibility->all;
-is(  $x[1]->visible_on_ftp_site, 1, 'multiple repos should be publically released');
+is( $x[1]->visible_on_ftp_site, 1, 'multiple repos should be publically released');
+is( $x[1]->version, "0.3", 'should remain unchanged');
 
 @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("another repo"    )->version_visibility->all;
 is( $x[1]->visible_on_ftp_site, 1, 'multiple repos should be publically released');
+is( $x[1]->version, "0.3", 'should remain unchanged');
 
 done_testing();
 

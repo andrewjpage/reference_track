@@ -49,7 +49,8 @@ sub create
     short_name => $short_name
    );
   my $full_repository_path = $self->_full_repository_path($genus, $subspecies );
-  my $created_repository_row = $self->add($repository_name_obj->human_readable_name(), $self->_repository_uri($full_repository_path, $repository_name_obj->repository_name()), $repository_name_obj->short_name());
+  my $repository_uri = $self->_repository_uri($full_repository_path, $repository_name_obj->repository_name());
+  my $created_repository_row = $self->add($repository_name_obj->human_readable_name(), $repository_uri, $repository_name_obj->short_name());
 
   my $repository_version = ReferenceTrack::Repository::Version->new(version_number => $starting_version)->version_number();
   $created_repository_row->version_visibility->create({
@@ -59,7 +60,9 @@ sub create
     
   ReferenceTrack::Repository::Git::Remote->new(
       root  => $full_repository_path,
-      name => $repository_name_obj->repository_name()
+      name => $repository_name_obj->repository_name(),
+      starting_version => $starting_version,
+      location => $repository_uri,
     )->create();
 
   return $created_repository_row;

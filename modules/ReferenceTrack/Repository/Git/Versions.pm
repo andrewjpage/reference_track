@@ -17,6 +17,7 @@ use Moose;
 use Git::Repository;
 use File::Temp;
 use ReferenceTrack::Repository::Version;
+use ReferenceTrack::Repository::Git::Instance;
 
 # input
 has 'repository'         => ( is => 'ro', isa => 'ReferenceTrack::Schema::Result::Repositories', required => 1);
@@ -26,8 +27,7 @@ has 'versions'           => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder 
 
 # internal
 has '_branches'          => ( is => 'ro', isa => 'ArrayRef',        lazy => 1, builder => '_build__branches');
-has '_working_directory' => ( is => 'ro', isa => 'Str',             default => sub { File::Temp->newdir(CLEANUP => 1).""; });
-has '_git_instance'      => ( is => 'ro', isa => 'Git::Repository', lazy => 1, builder => '_build__git_instance');      
+has '_git_instance_obj'  => ( is => 'ro', isa => 'ReferenceTrack::Repository::Git::Instance', lazy => 1, builder => '_build__git_instance');      
 
 sub latest_version
 {
@@ -76,7 +76,7 @@ sub _build__branches
 {
   my($self) = @_;
 
-  my $raw_branches = $self->_git_instance->run(branch => '-a');
+  my $raw_branches = $self->_git_instance_obj->git_instance->run(branch => '-a');
   my @branches = split(/\n/,$raw_branches);
   return \@branches;
 }
@@ -84,12 +84,8 @@ sub _build__branches
 sub _build__git_instance
 {
   my($self) = @_;
-  Git::Repository->run( clone => $self->repository->location, $self->_working_directory );
-  Git::Repository->new( work_tree => $self->_working_directory);
+  ReferenceTrack::Repository::Git::Instance->new(location => $self->repository->location);
 }
-
-# given a git repository, retrieve a list of all branch names
-
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

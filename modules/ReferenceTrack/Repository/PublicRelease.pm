@@ -27,7 +27,7 @@ sub flag_all_as_publically_released
   {
     my $repository = ReferenceTrack::Repository::Git::Versions->new(repository => $repository_row);
     $repository_row->version_visibility->update_or_create(
-        { 
+        {
           version => $repository->latest_version(),
           visible_on_ftp_site => 1,
         }
