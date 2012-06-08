@@ -27,7 +27,7 @@ use Getopt::Long;
 
 use ReferenceTrack::Controller;
 
-my ($database, @repository_details, $public_release_repository,@creation_details,$starting_version, $short_name, $minor_release);
+my ($database, @repository_details, $public_release_repository,@creation_details,$starting_version, $short_name, $major_release,$minor_release);
 
 GetOptions ('database|d=s'    => \$database,
             'a|add=s{2}'         => \@repository_details,
@@ -40,7 +40,7 @@ GetOptions ('database|d=s'    => \$database,
             
 );
 
-((@repository_details == 2) || $public_release_repository || (@creation_details == 3 ))or die <<USAGE;
+((@repository_details == 2) || $public_release_repository || $major_release || $minor_release || (@creation_details == 3 ))or die <<USAGE;
 Usage: $0 [options]
 Query the reference tracking system
 

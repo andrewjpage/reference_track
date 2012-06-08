@@ -111,7 +111,7 @@ sub _make_minor_release
   my($self) = @_;
   my $repository_search = ReferenceTrack::Repository::Search->new(
     database_settings => $self->database_settings,
-    query             => $self->major_release,
+    query             => $self->minor_release,
     );
   ReferenceTrack::Repository::PublicRelease->new(
     repository_search_results => $repository_search
