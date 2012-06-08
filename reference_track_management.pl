@@ -62,11 +62,20 @@ $database_settings{ro_user} = $ENV{VRTRACK_RO_USER}  || 'pathpipe_ro';
 $database_settings{rw_user} =  $ENV{VRTRACK_RW_USER} || 'pathpipe_rw';
 $database_settings{password} = $ENV{VRTRACK_PASSWORD};
 
-ReferenceTrack::Controller->new(
-    database_settings => \%database_settings,
-    add_repository    => \@repository_details,
-    public_release    => $public_release_repository,
-    creation_details  => \@creation_details,
-    starting_version  => $starting_version,
-    short_name        => $short_name
-  )->run();
+if(defined($public_release_repository))
+{
+  ReferenceTrack::Controller->new(
+      database_settings => \%database_settings,
+      public_release    => $public_release_repository,
+    )->run();
+}
+else
+{
+   ReferenceTrack::Controller->new(
+       database_settings => \%database_settings,
+       add_repository    => \@repository_details,
+       creation_details  => \@creation_details,
+       starting_version  => $starting_version,
+       short_name        => $short_name
+     )->run();
+}

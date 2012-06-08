@@ -22,10 +22,10 @@ use ReferenceTrack::Repository::Search;
 use ReferenceTrack::Repository::PublicRelease;
 
 has 'database_settings' => ( is => 'ro', isa => 'HashRef', required => 1);
-has 'add_repository'    => ( is => 'ro', isa => 'Maybe[ArrayRef]');
-has 'public_release'    => ( is => 'ro', isa => 'Maybe[Str]');
-has 'short_name'        => ( is => 'ro', isa => 'Maybe[Str]');
-has 'creation_details'  => ( is => 'ro', isa => 'Maybe[ArrayRef]');
+has 'add_repository'    => ( is => 'ro', isa => 'ArrayRef');
+has 'public_release'    => ( is => 'ro', isa => 'Str');
+has 'short_name'        => ( is => 'ro', isa => 'Str');
+has 'creation_details'  => ( is => 'ro', isa => 'ArrayRef');
 has 'starting_version'  => ( is => 'ro', isa => 'Str', default => "0.1");
 
 has '_repository_management' => ( is => 'ro', lazy => 1, builder => '_build__repository_management');
