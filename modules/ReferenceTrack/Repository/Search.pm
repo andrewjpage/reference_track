@@ -6,7 +6,7 @@ RepositorySearch - Represents a collection of RepositorySearch
 
 use ReferenceTrack::RepositorySearch;
 my $repository_query_report = ReferenceTrack::RepositorySearch->new(
-  environment     => 'test',
+  database_settings     => \%databasesettings,
   query           => 'abc123'
   );
 $repository_query_report->print_report();
@@ -24,7 +24,7 @@ has '_repository_query_results' => ( is => 'rw', isa => 'ArrayRef', lazy => 1, b
 sub _build__repository_query_results
 {
   my($self)= @_; 
-  ReferenceTrack::Repositories->new( _dbh => $self->_ro_dbh)->find_all_by_name($self->query);
+  ReferenceTrack::Repositories->new( _dbh => $self->_rw_dbh)->find_all_by_name($self->query);
 }
 
 sub print_report

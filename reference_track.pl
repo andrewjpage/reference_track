@@ -25,11 +25,12 @@ BEGIN { unshift(@INC, './modules') }
 use Moose;
 use Getopt::Long;
 use ReferenceTrack::Repository::Search;
+use ReferenceTrack::Repository::Clone;
 
-my ($ENVIRONMENT, $query);
+my ($database, $query, $clone);
 
-GetOptions ('environment|e=s'    => \$ENVIRONMENT,
-            'query|q=s'          => \$query
+GetOptions ('database|d=s'    => \$database,
+            'query|q=s'          => \$query,
             'clone|c'          => \$clone
 );
 
@@ -46,11 +47,19 @@ reference_track.pl -c -q repo_name
 USAGE
 ;
 
-$ENVIRONMENT ||= 'production';
+$database ||= 'pathogen_reference_track';
+my %database_settings;
+$database_settings{database} = $database ;
+$database_settings{host} = $ENV{VRTRACK_HOST} || 'mcs6';
+$database_settings{port} = $ENV{VRTRACK_PORT} || 3347;
+$database_settings{ro_user} = $ENV{VRTRACK_RO_USER}  || 'pathpipe_ro';
+$database_settings{rw_user} =  $ENV{VRTRACK_RW_USER} || 'pathpipe_rw';
+$database_settings{password} = $ENV{VRTRACK_PASSWORD};
+
 
 my $repository_search = ReferenceTrack::Repository::Search->new(
-  environment     => $ENVIRONMENT,
-  query           => $query,
+  database_settings => \%database_settings,
+  query             => $query,
   );
 $repository_search->print_report();
 

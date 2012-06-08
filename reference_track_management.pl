@@ -27,39 +27,73 @@ use Getopt::Long;
 
 use ReferenceTrack::Controller;
 
-my ($ENVIRONMENT, @repository_details, $public_release_repository,@creation_details,$starting_version, $short_name);
+my ($database, @repository_details, $public_release_repository,@creation_details,$starting_version, $short_name, $major_release,$minor_release);
 
-GetOptions ('environment|e=s'    => \$ENVIRONMENT,
+GetOptions ('database|d=s'    => \$database,
             'a|add=s{2}'         => \@repository_details,
             'p|public_release=s'   => \$public_release_repository,
             'c|create=s{3}'        => \@creation_details,
             's|starting_version=s' => \$starting_version,
             'n|short_name=s'       => \$short_name,
+            'm|major_release=s'    => \$major_release,
+            'n|minor_release=s'    => \$minor_release
             
 );
 
-((@repository_details == 2) || $public_release_repository || (@creation_details == 3 ))or die <<USAGE;
+((@repository_details == 2) || $public_release_repository || $major_release || $minor_release || (@creation_details == 3 ))or die <<USAGE;
 Usage: $0 [options]
 Query the reference tracking system
 
 reference_track_management.pl --add "My repo name" git://example.com/example.git
-reference_track_management.pl --public_release "My repo name"
-
-reference_track_management.pl --create Plasmodium falciparum 3D7 
+reference_track_management.pl --create Plasmodium falciparum 3D7 --short_name PF3D7
 reference_track_management.pl --create Plasmodium falciparum 3D7 --starting_version 0.3 --short_name PF3D7
+
+reference_track_management.pl --public_release "3D7"
+reference_track_management.pl --major_release "3D7"
+reference_track_management.pl --minor_release "3D7"
 
  Options:
      -a|add     A name for your repository (can be anything), and the location of the repository.
 USAGE
 ;
 
-$ENVIRONMENT ||= 'production';
+$database ||= 'pathogen_reference_track';
+my %database_settings;
+$database_settings{database} = $database ;
+$database_settings{host} = $ENV{VRTRACK_HOST} || 'mcs6';
+$database_settings{port} = $ENV{VRTRACK_PORT} || 3347;
+$database_settings{ro_user} = $ENV{VRTRACK_RO_USER}  || 'pathpipe_ro';
+$database_settings{rw_user} =  $ENV{VRTRACK_RW_USER} || 'pathpipe_rw';
+$database_settings{password} = $ENV{VRTRACK_PASSWORD};
 
-ReferenceTrack::Controller->new(
-    environment      => $ENVIRONMENT,
-    add_repository   => \@repository_details,
-    public_release   => $public_release_repository,
-    creation_details => \@creation_details,
-    starting_version => $starting_version,
-    short_name       => $short_name
-  )->run();
+if(defined($public_release_repository))
+{
+  ReferenceTrack::Controller->new(
+      database_settings => \%database_settings,
+      public_release    => $public_release_repository,
+    )->run();
+}
+elsif(defined($major_release))
+{
+  ReferenceTrack::Controller->new(
+      database_settings => \%database_settings,
+      major_release     => $major_release,
+    )->run();
+}
+elsif(defined($minor_release))
+{
+  ReferenceTrack::Controller->new(
+      database_settings => \%database_settings,
+      minor_release     => $minor_release,
+    )->run();
+}
+else
+{
+   ReferenceTrack::Controller->new(
+       database_settings => \%database_settings,
+       add_repository    => \@repository_details,
+       creation_details  => \@creation_details,
+       starting_version  => $starting_version,
+       short_name        => $short_name
+     )->run();
+}

@@ -6,7 +6,7 @@ Management - A driver class for managment functions
 
 use ReferenceTrack::Management;
 my $repo_management = ReferenceTrack::Management->new(
-  environment  => 'test',
+  database_settings     => \%databasesettings
   );
 $repo_management->add("name", "repo");
 =cut
@@ -48,8 +48,9 @@ sub create
     strain     => $strain,
     short_name => $short_name
    );
-  my $full_repository_path = $self->_full_repository_path($genus, $subspecies, $repository_name_obj->repository_name() );
-  my $created_repository_row = $self->add($repository_name_obj->human_readable_name(), $self->_repository_uri($full_repository_path), $repository_name_obj->short_name());
+  my $full_repository_path = $self->_full_repository_path($genus, $subspecies );
+  my $repository_uri = $self->_repository_uri($full_repository_path, $repository_name_obj->repository_name());
+  my $created_repository_row = $self->add($repository_name_obj->human_readable_name(), $repository_uri, $repository_name_obj->short_name());
 
   my $repository_version = ReferenceTrack::Repository::Version->new(version_number => $starting_version)->version_number();
   $created_repository_row->version_visibility->create({
@@ -59,7 +60,9 @@ sub create
     
   ReferenceTrack::Repository::Git::Remote->new(
       root  => $full_repository_path,
-      name => $repository_name_obj->repository_name()
+      name => $repository_name_obj->repository_name(),
+      starting_version => $starting_version,
+      location => $repository_uri,
     )->create();
 
   return $created_repository_row;
@@ -67,14 +70,14 @@ sub create
 
 sub _full_repository_path
 {
-  my($self, $genus, $subspecies, $repository_name) = @_;
-  return join('/',($self->repository_root, $genus, $subspecies, $repository_name));
+  my($self, $genus, $subspecies) = @_;
+  return join('/',($self->repository_root, $genus, $subspecies));
 }
 
 sub _repository_uri
 {
-  my($self,$full_repository_path) = @_;
-  return 'file:////'.$full_repository_path;
+  my($self,$full_repository_path, $repository_name) = @_;
+  return 'file:////'.$full_repository_path.'/'. $repository_name;
 }
 
 no Moose;

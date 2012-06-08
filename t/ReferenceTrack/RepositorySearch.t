@@ -11,7 +11,7 @@ BEGIN {
     use_ok('ReferenceTrack::Repository::Search');
     use_ok('ReferenceTrack::Repository::QueryReport');
 }
-
+my %database_settings = (host => "localhost", port => 3306);
 # seed data
 my $dbh = DBICx::TestDatabase->new('ReferenceTrack::Schema');
 $dbh->resultset('Repositories')->create({ name => "something totally different",  location => 'abc.git', short_name => "ABC"   });
@@ -20,10 +20,11 @@ $dbh->resultset('Repositories')->create({ name => "another repo",  location => '
 
 
 ok my $repository_query_report = ReferenceTrack::Repository::Search->new(
-  environment     => 'staging',
-  query           => 'repo'
+  database_settings => \%database_settings,
+  query           => 'repo',
+  _ro_dbh         => $dbh,
+  _rw_dbh         => $dbh,
   ), 'initialise repo search object';
-$repository_query_report->_ro_dbh($dbh); # intercept the database handle and use the test database
 
 is 'some_location.git
 some_location.git

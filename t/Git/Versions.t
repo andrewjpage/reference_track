@@ -24,7 +24,7 @@ BEGIN {
 initialise_git_repository($tmpdirectory );
 
 ok(my $repository = ReferenceTrack::Repository::Git::Versions->new(repository => $fake_repository), 'initialise looking up repository');
-isnt($repository->_working_directory,$tmpdirectory,'working directory is different to remote ');
+isnt($repository->_git_instance_obj->_working_directory,$tmpdirectory,'working directory is different to remote ');
 my $expected_versions = ["0.1","0.2","0.3"];
 is_deeply($repository->versions(), $expected_versions,'branch names match');
 
@@ -44,5 +44,5 @@ sub initialise_git_repository
   `cd $tmpdirectory && git branch 0.1`;
   `cd $tmpdirectory && git branch 0.2`;
   `cd $tmpdirectory && git branch 0.3`;
-  `cd $test_directory`;
+  chdir($test_directory);
 }

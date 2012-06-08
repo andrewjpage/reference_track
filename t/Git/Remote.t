@@ -19,7 +19,8 @@ my $tmpdirectory = $tmpdirectory_obj->dirname();
 ok(-d $tmpdirectory, 'Tmp directory exists');
 ok(my $repo = ReferenceTrack::Repository::Git::Remote->new(
   root  => $tmpdirectory,
-  name => 'test.git'
+  name => 'test.git',
+  location => 'file:////'.$tmpdirectory.'/test.git'
   ),'Initalise remote repository creation object');
 ok($repo->create(),'create remote repository');
 

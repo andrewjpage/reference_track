@@ -6,7 +6,7 @@ Controller - Represents a collection of Controller
 
 use ReferenceTrack::Controller;
 ReferenceTrack::Controller->new(
-    environment      => $ENVIRONMENT,
+    database_settings => \%dbsettings,
     add_repository   => \@repository_details,
     public_release   => $public_release_repository,
     creation_details => \@creation_details,
@@ -21,9 +21,11 @@ use ReferenceTrack::Repository::Management;
 use ReferenceTrack::Repository::Search;
 use ReferenceTrack::Repository::PublicRelease;
 
-has 'environment'       => ( is => 'ro', isa => 'Str', required => 1, default => 'test');
+has 'database_settings' => ( is => 'ro', isa => 'HashRef', required => 1);
 has 'add_repository'    => ( is => 'ro', isa => 'ArrayRef');
-has 'public_release'    => ( is => 'ro', isa => 'Str');
+has 'public_release'    => ( is => 'rw', isa => 'Str');
+has 'major_release'     => ( is => 'rw', isa => 'Str');
+has 'minor_release'     => ( is => 'rw', isa => 'Str');
 has 'short_name'        => ( is => 'ro', isa => 'Str');
 has 'creation_details'  => ( is => 'ro', isa => 'ArrayRef');
 has 'starting_version'  => ( is => 'ro', isa => 'Str', default => "0.1");
@@ -33,7 +35,7 @@ has '_repository_management' => ( is => 'ro', lazy => 1, builder => '_build__rep
 sub _build__repository_management
 {
     my($self) = @_;
-    ReferenceTrack::Repository::Management->new(environment => $self->environment);
+    ReferenceTrack::Repository::Management->new(database_settings => $self->database_settings);
 }
 
 sub run
@@ -43,6 +45,16 @@ sub run
   if((defined $self->add_repository) && @{$self->add_repository} > 1) 
   {  
     $self->_add_existing_repository();
+  }
+  
+  if(defined($self->minor_release))
+  {
+    $self->_make_minor_release();
+  }
+
+  if(defined($self->major_release))
+  {
+    $self->_make_major_release();
   }
 
   if(defined($self->public_release))
@@ -74,12 +86,36 @@ sub _make_publically_released
 {
   my($self) = @_;
   my $repository_search = ReferenceTrack::Repository::Search->new(
-    environment     => $self->environment,
-    query           => $self->public_release,
+    database_settings => $self->database_settings,
+    query             => $self->public_release,
     );
   ReferenceTrack::Repository::PublicRelease->new(
     repository_search_results => $repository_search
   )->flag_all_as_publically_released();
+}
+
+sub _make_major_release
+{
+  my($self) = @_;
+  my $repository_search = ReferenceTrack::Repository::Search->new(
+    database_settings => $self->database_settings,
+    query             => $self->major_release,
+    );
+  ReferenceTrack::Repository::PublicRelease->new(
+    repository_search_results => $repository_search
+  )->flag_all_as_major_release();
+}
+
+sub _make_minor_release
+{
+  my($self) = @_;
+  my $repository_search = ReferenceTrack::Repository::Search->new(
+    database_settings => $self->database_settings,
+    query             => $self->minor_release,
+    );
+  ReferenceTrack::Repository::PublicRelease->new(
+    repository_search_results => $repository_search
+  )->flag_all_as_minor_release();
 }
 
 no Moose;
