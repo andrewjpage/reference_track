@@ -25,6 +25,7 @@ BEGIN { unshift(@INC, './modules') }
 use Moose;
 use Getopt::Long;
 use ReferenceTrack::Repository::Search;
+use ReferenceTrack::Repository::Clone;
 
 my ($database, $query, $clone);
 

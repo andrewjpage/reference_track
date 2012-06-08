@@ -38,7 +38,7 @@ sub clone
    my ($self)= @_; 
    for my $repository_location (@{$self->_repositories})
    {
-     Git::Repository->run( clone => $repository_location, '.' );
+     Git::Repository->run( clone => $repository_location );
    }
 }
 no Moose;
