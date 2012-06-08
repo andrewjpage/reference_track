@@ -16,13 +16,15 @@ use Moose;
 
 has 'ro_dbh'             => ( is => 'rw',                      lazy => 1, builder => '_build_ro_dbh');
 has 'rw_dbh'             => ( is => 'rw',                      lazy => 1, builder => '_build_rw_dbh');
-has 'database_settings'           => ( is => 'rw', isa => 'HashRef');
+has 'database_settings'  => ( is => 'rw', isa => 'HashRef');
 
 sub _create_dbh
 {
   my($self, $username) = @_;
-  my $password;
   my %database_settings = %{$self->database_settings};
+  return undef unless(defined($database_settings{host}));
+  my $password;
+
   if($username eq "rw_user")
   {
     $password = $database_settings{password};

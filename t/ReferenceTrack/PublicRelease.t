@@ -26,7 +26,7 @@ BEGIN {
     use_ok('ReferenceTrack::Repository::PublicRelease');
 }
 
-my %database_settings = (host => "localhost", port => 3306);
+my %database_settings = (port => 3306);
 
 # seed data
 my $dbh = DBICx::TestDatabase->new('ReferenceTrack::Schema');

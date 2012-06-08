@@ -10,7 +10,7 @@ BEGIN {
     use ReferenceTrack::Schema;
     use_ok('ReferenceTrack::Repository::Management');
 }
-my %database_settings = (host => "localhost", port => 3306);
+my %database_settings = (port => 3306);
 
 # setup test databases with seed data
 my $dbh = DBICx::TestDatabase->new('ReferenceTrack::Schema');

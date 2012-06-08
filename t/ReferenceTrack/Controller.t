@@ -2,7 +2,6 @@
 use strict;
 use warnings;
 use Test::MockObject;
-#use Test::MockModule;
 use Test::Exception;
 
 BEGIN { unshift(@INC, './modules') }
@@ -28,7 +27,7 @@ BEGIN {
     $fake_repo_public_release->mock('flag_all_as_publically_released', sub{ 1 });
    
 }
-my %database_settings = (host => "localhost", port => 3306);
+my %database_settings = (port => 3306);
 
 ok( ReferenceTrack::Controller->new(database_settings => \%database_settings)->run(), "Initialise controller with no parameters");
 
