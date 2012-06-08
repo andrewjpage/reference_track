@@ -23,7 +23,9 @@ use ReferenceTrack::Repository::PublicRelease;
 
 has 'database_settings' => ( is => 'ro', isa => 'HashRef', required => 1);
 has 'add_repository'    => ( is => 'ro', isa => 'ArrayRef');
-has 'public_release'    => ( is => 'ro', isa => 'Str');
+has 'public_release'    => ( is => 'rw', isa => 'Str');
+has 'major_release'     => ( is => 'rw', isa => 'Str');
+has 'minor_release'     => ( is => 'rw', isa => 'Str');
 has 'short_name'        => ( is => 'ro', isa => 'Str');
 has 'creation_details'  => ( is => 'ro', isa => 'ArrayRef');
 has 'starting_version'  => ( is => 'ro', isa => 'Str', default => "0.1");
@@ -43,6 +45,16 @@ sub run
   if((defined $self->add_repository) && @{$self->add_repository} > 1) 
   {  
     $self->_add_existing_repository();
+  }
+  
+  if(defined($self->minor_release))
+  {
+    $self->_make_minor_release();
+  }
+
+  if(defined($self->major_release))
+  {
+    $self->_make_major_release();
   }
 
   if(defined($self->public_release))
@@ -80,6 +92,30 @@ sub _make_publically_released
   ReferenceTrack::Repository::PublicRelease->new(
     repository_search_results => $repository_search
   )->flag_all_as_publically_released();
+}
+
+sub _make_major_release
+{
+  my($self) = @_;
+  my $repository_search = ReferenceTrack::Repository::Search->new(
+    database_settings => $self->database_settings,
+    query             => $self->major_release,
+    );
+  ReferenceTrack::Repository::PublicRelease->new(
+    repository_search_results => $repository_search
+  )->flag_all_as_major_release();
+}
+
+sub _make_minor_release
+{
+  my($self) = @_;
+  my $repository_search = ReferenceTrack::Repository::Search->new(
+    database_settings => $self->database_settings,
+    query             => $self->major_release,
+    );
+  ReferenceTrack::Repository::PublicRelease->new(
+    repository_search_results => $repository_search
+  )->flag_all_as_minor_release();
 }
 
 no Moose;

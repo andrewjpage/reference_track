@@ -19,8 +19,8 @@ use ReferenceTrack::Repository::Git::Instance;
 use File::Path qw(make_path remove_tree);
  
 # input variables
-has 'root'      => (is => 'rw', isa => 'Str', required => 1);
-has 'name'      => (is => 'rw', isa => 'Str', required => 1);
+has 'root'      => (is => 'rw', isa => 'Str');
+has 'name'      => (is => 'rw', isa => 'Str');
 has 'location'  => (is => 'rw', isa => 'Str', required => 1);
 has 'starting_version'  => (is => 'rw', isa => 'Str', default => "0.1");
 
@@ -38,11 +38,11 @@ sub create
   my($self) = @_;
   make_path($self->full_path, {mode => 0771 });
   system("git init --bare --shared ". $self->full_path);
-  $self->_create_version_branch;
+  $self->create_version_branch;
   1;
 }
 
-sub _create_version_branch
+sub create_version_branch
 {
   my($self) = @_;
   my $git_instance_obj  = ReferenceTrack::Repository::Git::Instance->new(location => $self->location); 

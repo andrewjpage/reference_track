@@ -14,7 +14,7 @@ my $tmpdirectory2_obj = File::Temp->newdir(CLEANUP => 1);
 my $tmpdirectory2 = $tmpdirectory2_obj->dirname();
 initialise_git_repository($tmpdirectory2 );
 
-my $tmpdirectory3_obj = File::Temp->newdir(CLEANUP => 1);
+my $tmpdirectory3_obj = File::Temp->newdir(CLEANUP =>1);
 my $tmpdirectory3 = $tmpdirectory3_obj->dirname();
 initialise_git_repository($tmpdirectory3 );
 
@@ -95,6 +95,23 @@ is( $x[1]->version, "0.3", 'should remain unchanged');
 is( $x[1]->visible_on_ftp_site, 1, 'multiple repos should be publically released');
 is( $x[1]->version, "0.3", 'should remain unchanged');
 
+
+ok( ReferenceTrack::Repository::PublicRelease->new(
+      repository_search_results => $repository_search_multiple
+    )->flag_all_as_major_release(), 'flag multiple repositories as being the next major release');
+
+@x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("something totally different")->version_visibility->all;
+is( $x[0]->visible_on_ftp_site, 1, 'Should not change because it didnt match regex');
+is( $x[0]->version, "0.3", 'no change in version number');
+
+@x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("existing repo")->version_visibility->all;
+is( $x[2]->visible_on_ftp_site, 0, 'should intially not be visible');
+is( $x[2]->version, "1", 'major increment in version number');
+
+@x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("another repo"    )->version_visibility->all;
+is( $x[2]->visible_on_ftp_site, 0, 'should intially not be visible');
+is( $x[2]->version, "1", 'major increment in version number');
+
 done_testing();
 
 
@@ -102,12 +119,18 @@ sub initialise_git_repository
 {
    my($tmpdirectory) = @_;
    my $test_directory = getcwd();
-  `git init $tmpdirectory`;
-  `cd $tmpdirectory && touch "temp_file"`;
-  `cd $tmpdirectory && git add temp_file`;
-  `cd $tmpdirectory && git commit -m "init"`;
-  `cd $tmpdirectory && git branch 0.1`;
-  `cd $tmpdirectory && git branch 0.2`;
-  `cd $tmpdirectory && git branch 0.3`;
+  `git init --bare --shared $tmpdirectory`;
+  
+   my $tmpdirectory_obj2 = File::Temp->newdir(CLEANUP => 1);
+   my $tmpdirectory2 = $tmpdirectory_obj2->dirname();
+   `git clone file:////$tmpdirectory $tmpdirectory2`;
+
+  `cd $tmpdirectory2 && touch "temp_file"`;
+  `cd $tmpdirectory2 && git add temp_file`;
+  `cd $tmpdirectory2 && git commit -m "init"`;
+  `cd $tmpdirectory2 && git branch 0.1`;
+  `cd $tmpdirectory2 && git branch 0.2`;
+  `cd $tmpdirectory2 && git branch 0.3`;
+  `cd $tmpdirectory2 && git push --all origin`;
   chdir($test_directory);
 }
