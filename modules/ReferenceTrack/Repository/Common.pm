@@ -9,7 +9,7 @@ has '_rw_dbh'           => ( is => 'rw', lazy => 1, builder => '_build__rw_dbh' 
 sub _build__ro_dbh
 {
   my($self)= @_; 
-  ReferenceTrack::Database->new( database_settings => $self->database_settings, password_required => 0)->ro_dbh;
+  ReferenceTrack::Database->new( database_settings => $self->database_settings)->ro_dbh;
 }
 
 sub _build__rw_dbh
