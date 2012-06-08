@@ -24,7 +24,7 @@ has '_repository_query_results' => ( is => 'rw', isa => 'ArrayRef', lazy => 1, b
 sub _build__repository_query_results
 {
   my($self)= @_; 
-  ReferenceTrack::Repositories->new( _dbh => $self->_ro_dbh)->find_all_by_name($self->query);
+  ReferenceTrack::Repositories->new( _dbh => $self->_rw_dbh)->find_all_by_name($self->query);
 }
 
 sub print_report
