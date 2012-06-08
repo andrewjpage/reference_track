@@ -54,8 +54,9 @@ $dbh->resultset('Repositories')->create({ name => "another repo",  location => '
 ok( my $repository_search = ReferenceTrack::Repository::Search->new(
       database_settings => \%database_settings,
       query             => 'something totally different',
+      _ro_dbh           => $dbh,
+      _rw_dbh           => $dbh,
   ),'search for the repo');
-$repository_search->_ro_dbh($dbh); # intercept the database handle and use the test database
 
 ok( ReferenceTrack::Repository::PublicRelease->new(
       repository_search_results => $repository_search
@@ -73,8 +74,9 @@ is( $x[0]->visible_on_ftp_site, 0, 'other repositorys should be uneffected');
 ok( my $repository_search_multiple = ReferenceTrack::Repository::Search->new(
       database_settings => \%database_settings,
       query           => 'repo',
+      _ro_dbh           => $dbh,
+      _rw_dbh           => $dbh,
   ),'search for multiple repos');
-$repository_search_multiple->_ro_dbh($dbh); # intercept the database handle and use the test database
 
 ok( ReferenceTrack::Repository::PublicRelease->new(
       repository_search_results => $repository_search_multiple

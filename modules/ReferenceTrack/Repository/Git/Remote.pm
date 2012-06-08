@@ -52,7 +52,7 @@ sub _create_version_branch
   $git_instance->run(commit => '-m "initial"');
   $git_instance->run(branch => $self->starting_version);
   $git_instance->run(push => origin => $self->starting_version);
-  $git_instance->run(push => 'origin');
+  $git_instance->run(push => origin => 'master');
   
 }
 

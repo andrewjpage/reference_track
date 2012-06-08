@@ -21,9 +21,10 @@ $dbh->resultset('Repositories')->create({ name => "another repo",  location => '
 
 ok my $repository_query_report = ReferenceTrack::Repository::Search->new(
   database_settings => \%database_settings,
-  query           => 'repo'
+  query           => 'repo',
+  _ro_dbh         => $dbh,
+  _rw_dbh         => $dbh,
   ), 'initialise repo search object';
-$repository_query_report->_ro_dbh($dbh); # intercept the database handle and use the test database
 
 is 'some_location.git
 some_location.git
