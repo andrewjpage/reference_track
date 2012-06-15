@@ -66,7 +66,7 @@ $database_settings{ro_user} = $ENV{VRTRACK_RO_USER}  || 'pathpipe_ro';
 $database_settings{rw_user} =  $ENV{VRTRACK_RW_USER} || 'pathpipe_rw';
 $database_settings{password} = $ENV{VRTRACK_PASSWORD};
 
-$starting_version || = "0.1";
+$starting_version ||= "0.1";
 
 if(defined($public_release_repository))
 {
