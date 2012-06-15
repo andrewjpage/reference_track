@@ -65,6 +65,8 @@ sub create
       location => $repository_uri,
     )->create();
 
+  print("Created reference repository: ".$repository_uri);
+
   return $created_repository_row;
 }
 

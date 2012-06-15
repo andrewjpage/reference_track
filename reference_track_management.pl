@@ -36,11 +36,11 @@ GetOptions ('database|d=s'    => \$database,
             's|starting_version=s' => \$starting_version,
             'n|short_name=s'       => \$short_name,
             'm|major_release=s'    => \$major_release,
-            'n|minor_release=s'    => \$minor_release
+            'd|minor_release=s'    => \$minor_release
             
 );
 
-((@repository_details == 2) || $public_release_repository || $major_release || $minor_release || (@creation_details == 3 ))or die <<USAGE;
+((@repository_details == 2) || $public_release_repository || $major_release || $minor_release || (@creation_details == 3 && $short_name))or die <<USAGE;
 Usage: $0 [options]
 Query the reference tracking system
 
@@ -65,6 +65,8 @@ $database_settings{port} = $ENV{VRTRACK_PORT} || 3347;
 $database_settings{ro_user} = $ENV{VRTRACK_RO_USER}  || 'pathpipe_ro';
 $database_settings{rw_user} =  $ENV{VRTRACK_RW_USER} || 'pathpipe_rw';
 $database_settings{password} = $ENV{VRTRACK_PASSWORD};
+
+$starting_version ||= "0.1";
 
 if(defined($public_release_repository))
 {
