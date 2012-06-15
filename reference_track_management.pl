@@ -36,7 +36,7 @@ GetOptions ('database|d=s'    => \$database,
             's|starting_version=s' => \$starting_version,
             'n|short_name=s'       => \$short_name,
             'm|major_release=s'    => \$major_release,
-            'n|minor_release=s'    => \$minor_release
+            'd|minor_release=s'    => \$minor_release
             
 );
 
