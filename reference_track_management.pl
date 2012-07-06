@@ -27,7 +27,7 @@ use Getopt::Long;
 
 use ReferenceTrack::Controller;
 
-my ($database, @repository_details, $public_release_repository,@creation_details,$starting_version, $short_name, $major_release,$minor_release);
+my ($database, @repository_details, $public_release_repository,@creation_details,$starting_version, $short_name, $major_release,$minor_release,$upload_to_ftp_site);
 
 GetOptions ('database|d=s'    => \$database,
             'a|add=s{2}'         => \@repository_details,
@@ -36,7 +36,8 @@ GetOptions ('database|d=s'    => \$database,
             's|starting_version=s' => \$starting_version,
             'n|short_name=s'       => \$short_name,
             'm|major_release=s'    => \$major_release,
-            'd|minor_release=s'    => \$minor_release
+            'd|minor_release=s'    => \$minor_release,
+            'u|upload_to_ftp_site' => \$upload_to_ftp_site
             
 );
 
@@ -51,6 +52,9 @@ reference_track_management.pl --create Plasmodium falciparum 3D7 --starting_vers
 reference_track_management.pl --public_release "3D7"
 reference_track_management.pl --major_release "3D7"
 reference_track_management.pl --minor_release "3D7"
+
+reference_track_management.pl --upload_to_ftp_site ""
+reference_track_management.pl --upload_to_ftp_site "3D7"
 
  Options:
      -a|add     A name for your repository (can be anything), and the location of the repository.
@@ -87,6 +91,13 @@ elsif(defined($minor_release))
   ReferenceTrack::Controller->new(
       database_settings => \%database_settings,
       minor_release     => $minor_release,
+    )->run();
+}
+elsif(defined($upload_to_ftp_site))
+{
+  ReferenceTrack::Controller->new(
+      database_settings  => \%database_settings,
+      upload_to_ftp_site => $upload_to_ftp_site,
     )->run();
 }
 else
