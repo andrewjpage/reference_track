@@ -35,7 +35,7 @@ sub is_subspecies_valid
 sub is_strain_valid
 {
   my($self, $input_string) = @_;
-  return 0 if( $input_string =~ /[\W]/ || length($input_string) <= 1 || lc($input_string) ne $input_string);
+  return 0 if( $input_string =~ /[\W]/ || length($input_string) <= 1);
   
   return 1;
 }

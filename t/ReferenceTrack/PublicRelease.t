@@ -123,9 +123,9 @@ is("ABC_EFG_HIJ_v1.0.tgz",$public_release_obj->_tar_file_name("ABC EFG_HIJ","1.0
 is("ABC_EFG_HIJ_v1.10.tgz",$public_release_obj->_tar_file_name("ABC EFG_HIJ","1.10"), 'create tar file name with major version float with minor version');
 
 # check the correct ftp directory is created
-is($ftp_temp_dir."/ABC",$public_release_obj->_ftp_destination("ABC EFG_HIJ"),'ftp destination is created');
-is($ftp_temp_dir."/ABC",$public_release_obj->_ftp_destination("ABC EFG HIJ"),'ftp destination is created with multiple space');
-is($ftp_temp_dir."/ABC_EFG_HIJ",$public_release_obj->_ftp_destination("ABC_EFG_HIJ"),'ftp destination is created with no space');
+is($ftp_temp_dir."/ABC/",$public_release_obj->_ftp_destination("ABC EFG_HIJ"),'ftp destination is created');
+is($ftp_temp_dir."/ABC/",$public_release_obj->_ftp_destination("ABC EFG HIJ"),'ftp destination is created with multiple space');
+is($ftp_temp_dir."/ABC_EFG_HIJ/",$public_release_obj->_ftp_destination("ABC_EFG_HIJ"),'ftp destination is created with no space');
 
 ok($public_release_obj->_create_archive_and_copy_to_ftp("ABC EFG", 'file:////'.$tmpdirectory, "0.1"), 'copy contents of git repo to ftp');
 ok((-e $ftp_temp_dir."/ABC/ABC_EFG_v0.1.tgz"), 'created archive and saved it to FTP site');

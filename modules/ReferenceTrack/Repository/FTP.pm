@@ -70,8 +70,11 @@ sub _create_archive_and_copy_to_ftp
     my $tar_output_temp_dir_obj = File::Temp->newdir(CLEANUP => 1);
     my $tar_file_name = $tar_output_temp_dir_obj->dirname()."/".$self->_tar_file_name($repository_name, $version);
     $tar->write( $tar_file_name, COMPRESS_GZIP );
-    copy($tar_file_name, $self->_ftp_destination($repository_name) );
+    my $destination = $self->_ftp_destination($repository_name);
+    # TODO - replace with RSYNC module
+    `rsync $tar_file_name $destination`;
   }
+  1;
 }
 
 sub _get_file_list
@@ -103,7 +106,7 @@ sub _ftp_destination
 {
   my ($self, $repository_name)= @_;
   my @humanised_repo_name = split(/ /,$repository_name);
-  my $ftp_destination = $self->public_directory."/".$humanised_repo_name[0];
+  my $ftp_destination = $self->public_directory."/".$humanised_repo_name[0]."/";
   make_path($ftp_destination);
   return $ftp_destination;
 }

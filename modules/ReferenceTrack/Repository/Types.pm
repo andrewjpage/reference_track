@@ -19,9 +19,6 @@ coerce 'ReferenceTrack::Repository::Name::Subspecies',
 subtype 'ReferenceTrack::Repository::Name::Strain',
   as 'Str',
   where { ReferenceTrack::Repository::Validate::Name->new()->is_strain_valid($_) };
-coerce 'ReferenceTrack::Repository::Name::Strain',
-  from 'Str',
-  via { lc($_) };
   
 subtype 'ReferenceTrack::Repository::Version::Number',
   as 'Num',

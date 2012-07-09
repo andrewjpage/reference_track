@@ -41,7 +41,7 @@ GetOptions ('database|d=s'    => \$database,
             
 );
 
-((@repository_details == 2) || $public_release_repository || $major_release || $minor_release || (@creation_details == 3 && $short_name))or die <<USAGE;
+((@repository_details == 2) ||$upload_to_ftp_site ||$public_release_repository || $major_release || $minor_release || (@creation_details == 3 && $short_name))or die <<USAGE;
 Usage: $0 [options]
 Query the reference tracking system
 
