@@ -29,6 +29,7 @@ has 'minor_release'     => ( is => 'rw', isa => 'Str');
 has 'short_name'        => ( is => 'ro', isa => 'Str');
 has 'creation_details'  => ( is => 'ro', isa => 'ArrayRef');
 has 'starting_version'  => ( is => 'ro', isa => 'Str', default => "0.1");
+has 'upload_to_ftp_site' => ( is => 'rw', isa => 'Str');
 
 has '_repository_management' => ( is => 'ro', lazy => 1, builder => '_build__repository_management');
 
@@ -42,6 +43,11 @@ sub run
 {
   my($self) = @_;
 
+  if((defined($self->creation_details) )&& @{$self->creation_details} ==3)
+  {
+    $self->_create_reference_repository();
+  }
+  
   if((defined $self->add_repository) && @{$self->add_repository} > 1) 
   {  
     $self->_add_existing_repository();
@@ -61,19 +67,34 @@ sub run
   {
      $self->_make_publically_released();
   }
-
-  if((defined($self->creation_details) )&& @{$self->creation_details} ==3)
+ 
+  if(defined($self->upload_to_ftp_site))
   {
-    $self->_create_reference_repository();
+     $self->_perform_upload_to_ftp_site();
   }
+   
   
   1;
 }
 
+sub _perform_upload_to_ftp_site
+{
+  my($self) = @_;
+  # search for repositories
+  my $repository_search = ReferenceTrack::Repository::Search->new(
+    database_settings => $self->database_settings,
+    query             => $self->upload_to_ftp_site,
+    );
+    
+  ReferenceTrack::Repository::PublicRelease->new(
+      repository_search_results => $repository_search
+    )->copy_publically_released_to_ftp_site();
+}
+
 sub _add_existing_repository
 {
-   my($self) = @_;
-   $self->_repository_management->add($self->add_repository->[0], $self->add_repository->[1], $self->short_name);
+  my($self) = @_;
+  $self->_repository_management->add($self->add_repository->[0], $self->add_repository->[1], $self->short_name);
 }
 
 sub _create_reference_repository

@@ -18,6 +18,8 @@ my $tmpdirectory3_obj = File::Temp->newdir(CLEANUP =>1);
 my $tmpdirectory3 = $tmpdirectory3_obj->dirname();
 initialise_git_repository($tmpdirectory3 );
 
+my $ftp_temp_dir_obj = File::Temp->newdir(CLEANUP => 1);
+my $ftp_temp_dir = $ftp_temp_dir_obj->dirname();
 BEGIN { unshift(@INC, './modules') }
 BEGIN {
     use Test::Most;
@@ -111,6 +113,25 @@ is( $x[2]->version, "1", 'major increment in version number');
 @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("another repo"    )->version_visibility->all;
 is( $x[2]->visible_on_ftp_site, 0, 'should intially not be visible');
 is( $x[2]->version, "1", 'major increment in version number');
+
+
+# check the reference names are created
+my $public_release_obj = ReferenceTrack::Repository::PublicRelease->new(repository_search_results => $repository_search_multiple, public_directory => $ftp_temp_dir);
+is("ABC_EFG_HIJ_v0.0001.tgz",$public_release_obj->_tar_file_name("ABC EFG_HIJ","0.0001"), 'create tar file name with minor version');
+is("ABC_EFG_HIJ_v1.tgz",$public_release_obj->_tar_file_name("ABC EFG_HIJ","1"), 'create tar file name major version whole int');
+is("ABC_EFG_HIJ_v1.0.tgz",$public_release_obj->_tar_file_name("ABC EFG_HIJ","1.0"), 'create tar file name with major version float');
+is("ABC_EFG_HIJ_v1.10.tgz",$public_release_obj->_tar_file_name("ABC EFG_HIJ","1.10"), 'create tar file name with major version float with minor version');
+
+# check the correct ftp directory is created
+is($ftp_temp_dir."/ABC/",$public_release_obj->_ftp_destination("ABC EFG_HIJ"),'ftp destination is created');
+is($ftp_temp_dir."/ABC/",$public_release_obj->_ftp_destination("ABC EFG HIJ"),'ftp destination is created with multiple space');
+is($ftp_temp_dir."/ABC_EFG_HIJ/",$public_release_obj->_ftp_destination("ABC_EFG_HIJ"),'ftp destination is created with no space');
+
+ok($public_release_obj->_create_archive_and_copy_to_ftp("ABC EFG", 'file:////'.$tmpdirectory, "0.1"), 'copy contents of git repo to ftp');
+ok((-e $ftp_temp_dir."/ABC/ABC_EFG_v0.1.tgz"), 'created archive and saved it to FTP site');
+
+
+ok($public_release_obj->copy_publically_released_to_ftp_site(), 'publically release all archives');
 
 done_testing();
 

@@ -13,10 +13,12 @@ $repository_clone->flag_all_as_publically_released();
 
 package ReferenceTrack::Repository::PublicRelease;
 use Moose;
+use File::Temp;
 use ReferenceTrack::Repository::Search;
 use ReferenceTrack::Repository::Git::Versions;
 use ReferenceTrack::Repository::Version;
 use ReferenceTrack::Repository::Git::Remote;
+with 'ReferenceTrack::Repository::FTP';
 
 has 'repository_search_results' => ( is => 'ro', isa => 'ReferenceTrack::Repository::Search',  required   => 1 );
 
@@ -62,6 +64,8 @@ sub _flag_all_with_new_version
 
   return 1;
 }
+
+
 
 sub flag_all_as_major_release
 {

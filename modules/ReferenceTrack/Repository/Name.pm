@@ -21,7 +21,7 @@ use ReferenceTrack::Repository::Types;
 
 has 'genus'      => ( is => 'ro', isa => 'ReferenceTrack::Repository::Name::Genus',      required => 1, coerce => 1 );
 has 'subspecies' => ( is => 'ro', isa => 'ReferenceTrack::Repository::Name::Subspecies', required => 1, coerce => 1 );
-has 'strain'     => ( is => 'ro', isa => 'ReferenceTrack::Repository::Name::Strain',     required => 1, coerce => 1 );
+has 'strain'     => ( is => 'ro', isa => 'ReferenceTrack::Repository::Name::Strain',     required => 1);
 has 'short_name' => ( is => 'ro', isa => 'ReferenceTrack::Repository::Name::ShortName',  required => 1 );
 
 
