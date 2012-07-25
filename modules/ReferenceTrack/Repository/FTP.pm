@@ -24,7 +24,7 @@ use Data::Dumper;
 has 'public_directory' => ( is => 'ro', isa => 'Str',  default => '/nfs/disk69/ftp/pub/pathogens/refs' );
 has '_file_list' => (
         traits  => ['Array'],
-        is      => 'ro',
+        is      => 'rw',
         isa     => 'ArrayRef[Str]',
         default => sub { [] },
         handles => {
@@ -39,16 +39,17 @@ sub copy_publically_released_to_ftp_site
   my ($self)= @_; 
   return unless(defined($self->repository_search_results->_repository_query_results));
 
+  my $errorcheck = 0; # check for error when uploading to ftp site.
   for my $repository_row (@{$self->repository_search_results->_repository_query_results})
   {
     # only select ones which have the publically released flag
     for my $version_row ($repository_row->version_visibility->all)
     {
       next if($version_row->visible_on_ftp_site == 0);
-      $self->_create_archive_and_copy_to_ftp($repository_row->name, $repository_row->location, $version_row->version);
+      $self->_create_archive_and_copy_to_ftp($repository_row->name, $repository_row->location, $version_row->version) || $errorcheck++;
     }
   }
-  1;
+  return $errorcheck ? 0:1;
 }
 
 sub _create_archive_and_copy_to_ftp
@@ -64,6 +65,7 @@ sub _create_archive_and_copy_to_ftp
   {
     local $CWD = $git_instance_obj->working_directory ;
     $tar->setcwd( $git_instance_obj->working_directory );
+    $self->_file_list([]); # reset file list
     $self->_get_file_list($git_instance_obj->working_directory );
     
     $tar->add_files($self->all_files);
@@ -74,7 +76,7 @@ sub _create_archive_and_copy_to_ftp
     # TODO - replace with RSYNC module
     `rsync $tar_file_name $destination`;
   }
-  1;
+  return $tar->error ? 0:1;
 }
 
 sub _get_file_list
