@@ -37,11 +37,11 @@ GetOptions ('database|d=s'    => \$database,
             'n|short_name=s'       => \$short_name,
             'm|major_release=s'    => \$major_release,
             'd|minor_release=s'    => \$minor_release,
-            'u|upload_to_ftp_site' => \$upload_to_ftp_site
+            'u|upload_to_ftp_site:s' => \$upload_to_ftp_site
             
 );
 
-((@repository_details == 2) ||$upload_to_ftp_site ||$public_release_repository || $major_release || $minor_release || (@creation_details == 3 && $short_name))or die <<USAGE;
+((@repository_details == 2) || defined $upload_to_ftp_site ||$public_release_repository || $major_release || $minor_release || (@creation_details == 3 && $short_name))or die <<USAGE;
 Usage: $0 [options]
 Query the reference tracking system
 
