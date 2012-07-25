@@ -145,9 +145,10 @@ sub initialise_git_repository
    my $tmpdirectory_obj2 = File::Temp->newdir(CLEANUP => 1);
    my $tmpdirectory2 = $tmpdirectory_obj2->dirname();
    `git clone file:////$tmpdirectory $tmpdirectory2`;
-
-  `cd $tmpdirectory2 && touch "temp_file"`;
-  `cd $tmpdirectory2 && git add temp_file`;
+   
+   my $temp_file = 'temp_file_'.sprintf("%03d",int(rand(1000)));
+  `cd $tmpdirectory2 && touch "$temp_file"`;
+  `cd $tmpdirectory2 && git add $temp_file`;
   `cd $tmpdirectory2 && git commit -m "init"`;
   `cd $tmpdirectory2 && git branch 0.1`;
   `cd $tmpdirectory2 && git branch 0.2`;
