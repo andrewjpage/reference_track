@@ -19,6 +19,7 @@ use File::Find;
 use Archive::Tar;
 use File::chdir;
 use Data::Dumper;
+use IO::Compress::Gzip qw(gzip $GzipError);
 
 
 has 'public_directory' => ( is => 'ro', isa => 'Str',  default => '/nfs/disk69/ftp/pub/pathogens/refs' );
@@ -71,10 +72,14 @@ sub _create_archive_and_copy_to_ftp
     $tar->add_files($self->all_files);
     my $tar_output_temp_dir_obj = File::Temp->newdir(CLEANUP => 1);
     my $tar_file_name = $tar_output_temp_dir_obj->dirname()."/".$self->_tar_file_name($repository_name, $version);
-    $tar->write( $tar_file_name, COMPRESS_GZIP );
+    $tar->write( $tar_file_name.'.tar' ); # write uncompressed file
+
+    # compress file on disk with gzip
+    gzip $tar_file_name.'.tar' => $tar_file_name.'.tgz' or die "Compression failed: $GzipError\n";
+
     my $destination = $self->_ftp_destination($repository_name);
     # TODO - replace with RSYNC module
-    `rsync $tar_file_name $destination`;
+    `rsync $tar_file_name.tgz $destination`;
   }
   return $tar->error ? 0:1;
 }
@@ -117,7 +122,6 @@ sub _tar_file_name
 {
   my ($self, $repository_name, $version)= @_; 
   my $tar_file_name = join("_",($repository_name,"v".$version));
-  $tar_file_name = join(".",($tar_file_name,"tgz"));
   $tar_file_name =~ s! !_!g;
   return $tar_file_name;
 }

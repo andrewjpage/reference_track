@@ -117,10 +117,10 @@ is( $x[2]->version, "1", 'major increment in version number');
 
 # check the reference names are created
 my $public_release_obj = ReferenceTrack::Repository::PublicRelease->new(repository_search_results => $repository_search_multiple, public_directory => $ftp_temp_dir);
-is("ABC_EFG_HIJ_v0.0001.tgz",$public_release_obj->_tar_file_name("ABC EFG_HIJ","0.0001"), 'create tar file name with minor version');
-is("ABC_EFG_HIJ_v1.tgz",$public_release_obj->_tar_file_name("ABC EFG_HIJ","1"), 'create tar file name major version whole int');
-is("ABC_EFG_HIJ_v1.0.tgz",$public_release_obj->_tar_file_name("ABC EFG_HIJ","1.0"), 'create tar file name with major version float');
-is("ABC_EFG_HIJ_v1.10.tgz",$public_release_obj->_tar_file_name("ABC EFG_HIJ","1.10"), 'create tar file name with major version float with minor version');
+is("ABC_EFG_HIJ_v0.0001",$public_release_obj->_tar_file_name("ABC EFG_HIJ","0.0001"), 'create tar file name with minor version');
+is("ABC_EFG_HIJ_v1",$public_release_obj->_tar_file_name("ABC EFG_HIJ","1"), 'create tar file name major version whole int');
+is("ABC_EFG_HIJ_v1.0",$public_release_obj->_tar_file_name("ABC EFG_HIJ","1.0"), 'create tar file name with major version float');
+is("ABC_EFG_HIJ_v1.10",$public_release_obj->_tar_file_name("ABC EFG_HIJ","1.10"), 'create tar file name with major version float with minor version');
 
 # check the correct ftp directory is created
 is($ftp_temp_dir."/ABC/",$public_release_obj->_ftp_destination("ABC EFG_HIJ"),'ftp destination is created');
