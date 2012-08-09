@@ -20,7 +20,7 @@ dies_ok( sub {ReferenceTrack::Repository::Name->new(genus => 'ABC***',subspecies
 dies_ok( sub {ReferenceTrack::Repository::Name->new(genus => 'A',subspecies => 'EFG',strain   => 'HIJ', short_name => 'ABC')},'invalid genus dies');
 dies_ok( sub {ReferenceTrack::Repository::Name->new(genus => 'ABC',subspecies => 'EFG.---',strain   => 'HIJ', short_name => 'ABC')},'invalid subspecies dies');
 dies_ok( sub {ReferenceTrack::Repository::Name->new(genus => 'ABC',subspecies => 'EFG',strain   => ' XXXX', short_name => 'ABC')},'invalid strain dies');
-dies_ok( sub {ReferenceTrack::Repository::Name->new(genus => 'ABC',subspecies => 'EFG',strain   => 'X', short_name => 'ABC')},'invalid strain dies too short');
+dies_ok( sub {ReferenceTrack::Repository::Name->new(genus => 'ABC',subspecies => 'EFG',strain   => '', short_name => 'ABC')},'invalid strain dies too short');
 dies_ok( sub {ReferenceTrack::Repository::Name->new(genus => 'ABC',subspecies => 'EFG',strain   => 'XXXXXX', short_name => 'A')},'short name too short');
 dies_ok( sub {ReferenceTrack::Repository::Name->new(genus => 'ABC',subspecies => 'EFG',strain   => 'XXXXXX', short_name => 'AAAAAAAAABBBBBBBBB')},'short name too long');
 done_testing();
