@@ -41,7 +41,7 @@ sub next_major_version
 {
   my($self) = @_;
   
-  return sprintf("%d", int($self->version_number) +1);
+  return sprintf("%d.%d", int($self->version_number) +1, 1); # New version for the reference, and we say that this annotation is version 1 for this new reference
 }
 
 sub version_regex
