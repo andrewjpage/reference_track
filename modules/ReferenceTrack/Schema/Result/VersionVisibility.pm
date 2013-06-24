@@ -3,6 +3,7 @@ use base qw/DBIx::Class::Core/;
 
 __PACKAGE__->table('version_visibility');
 __PACKAGE__->add_columns(qw/version/);
+__PACKAGE__->add_columns(qw/public_version/, { default_value => "0.0" });
 __PACKAGE__->add_columns(qw/repository_id/, { is_numeric => 1});
 __PACKAGE__->add_unique_constraint([ qw/version repository_id/ ]);
 __PACKAGE__->add_columns(qw/visible_on_ftp_site/, { is_numeric => 1, default_value => 0 });
