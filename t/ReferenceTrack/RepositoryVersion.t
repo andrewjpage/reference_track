@@ -25,10 +25,10 @@ is(ReferenceTrack::Repository::Version->new(version_number => "0.1" )->next_vers
 is(ReferenceTrack::Repository::Version->new(version_number => "0.9" )->next_version,"0.10",'next version for pre release');
 
 
-is(ReferenceTrack::Repository::Version->new(version_number => "10"  )->next_major_version,"11",'next version for minor release');
-is(ReferenceTrack::Repository::Version->new(version_number => "10.0")->next_major_version,"11",'next version for minor release');
-is(ReferenceTrack::Repository::Version->new(version_number => "0.1" )->next_major_version,"1",'next version for pre release');
-is(ReferenceTrack::Repository::Version->new(version_number => "0.9" )->next_major_version,"1",'next version for pre release');
+is(ReferenceTrack::Repository::Version->new(version_number => "10"  )->next_major_version,"11.1",'next version for major release');
+is(ReferenceTrack::Repository::Version->new(version_number => "10.0")->next_major_version,"11.1",'next version for major release');
+is(ReferenceTrack::Repository::Version->new(version_number => "0.1" )->next_major_version,"1.1",'next version for pre release');
+is(ReferenceTrack::Repository::Version->new(version_number => "0.9" )->next_major_version,"1.1",'next version for pre release');
 
 done_testing();
 

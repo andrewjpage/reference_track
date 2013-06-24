@@ -42,4 +42,8 @@ my @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("Homo sap
 is(  $x[0]->visible_on_ftp_site, 0, 'Should not be publically visible initially');
 is(  $x[0]->version, '1.1', 'Version should be set to number passed in');
 
+# This test does throw a 'tests out of sequence' error when run within the collection of other tests. It seems to get a bit confused after test 9.
+# When this test program is run individually, it is plain to see that the tests pass. So, for now, we leave it as it is but this needs to be
+# sorted out later.
+
 done_testing();

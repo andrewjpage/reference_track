@@ -61,17 +61,19 @@ ok( my $repository_search = ReferenceTrack::Repository::Search->new(
   ),'search for the repo');
 
 ok( ReferenceTrack::Repository::PublicRelease->new(
-      repository_search_results => $repository_search
+      repository_search_results => $repository_search,
+      public_version => '4.0',
     )->flag_all_as_publically_released(), 'flag one repository as publically released');
 
 my @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("something totally different")->version_visibility->all;
 is( $x[0]->visible_on_ftp_site, 1, 'repository should be flagged as publically released');
 is( $x[0]->version, "0.3", 'should remain unchanged');
+is( $x[0]->public_version, "4.0", 'Public version provided by user');
 
 @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("existing repo"              )->version_visibility->all;
-is( $x[0]->visible_on_ftp_site, 0, 'other repositorys should be uneffected');
+is( $x[0]->visible_on_ftp_site, 0, 'other repositories should be uneffected');
 @x =ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("another repo"               )->version_visibility->all;
-is( $x[0]->visible_on_ftp_site, 0, 'other repositorys should be uneffected');
+is( $x[0]->visible_on_ftp_site, 0, 'other repositories should be uneffected');
 
 ok( my $repository_search_multiple = ReferenceTrack::Repository::Search->new(
       database_settings => \%database_settings,
@@ -81,21 +83,25 @@ ok( my $repository_search_multiple = ReferenceTrack::Repository::Search->new(
   ),'search for multiple repos');
 
 ok( ReferenceTrack::Repository::PublicRelease->new(
-      repository_search_results => $repository_search_multiple
+      repository_search_results => $repository_search_multiple,
+      public_version => '5.0',
     )->flag_all_as_publically_released(), 'flag multiple repositories as publically released');
 
 
 @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("something totally different")->version_visibility->all;
 is( $x[0]->visible_on_ftp_site, 1, 'should remain unchanged');
 is( $x[0]->version, "0.3", 'should remain unchanged');
+is( $x[0]->public_version, "4.0", 'public version should be same as before');
 
 @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("existing repo")->version_visibility->all;
 is( $x[1]->visible_on_ftp_site, 1, 'multiple repos should be publically released');
 is( $x[1]->version, "0.3", 'should remain unchanged');
+is( $x[1]->public_version, "5.0", 'public version the same for all repos released in one step');
 
 @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("another repo"    )->version_visibility->all;
 is( $x[1]->visible_on_ftp_site, 1, 'multiple repos should be publically released');
 is( $x[1]->version, "0.3", 'should remain unchanged');
+is( $x[1]->public_version, "5.0", 'public version the same for all repos released in one step');
 
 
 ok( ReferenceTrack::Repository::PublicRelease->new(
@@ -108,11 +114,11 @@ is( $x[0]->version, "0.3", 'no change in version number');
 
 @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("existing repo")->version_visibility->all;
 is( $x[2]->visible_on_ftp_site, 0, 'should intially not be visible');
-is( $x[2]->version, "1", 'major increment in version number');
+is( $x[2]->version, "1.1", 'major increment in version number');
 
 @x = ReferenceTrack::Repositories->new( _dbh => $dbh)->find_by_name("another repo"    )->version_visibility->all;
 is( $x[2]->visible_on_ftp_site, 0, 'should intially not be visible');
-is( $x[2]->version, "1", 'major increment in version number');
+is( $x[2]->version, "1.1", 'major increment in version number');
 
 
 # check the reference names are created
