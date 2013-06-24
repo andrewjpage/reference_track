@@ -21,6 +21,19 @@ use ReferenceTrack::Repository::Git::Remote;
 with 'ReferenceTrack::Repository::FTP';
 
 has 'repository_search_results' => ( is => 'ro', isa => 'ReferenceTrack::Repository::Search',  required   => 1 );
+has 'public_version'	=> ( is => 'ro', isa => 'Str');
+
+
+=head2 flag_all_as_publically_released
+
+  Arg [1]    : 
+  Example    :
+  Description: Marks the latest version of a repository as publically released (i.e. adds a record in table)
+  Returntype : 
+
+=cut
+
+
 
 sub flag_all_as_publically_released
 {
@@ -34,6 +47,7 @@ sub flag_all_as_publically_released
         {
           version => $repository->latest_version(),
           visible_on_ftp_site => 1,
+          public_version => $self->public_version,
         }
       );
   }
