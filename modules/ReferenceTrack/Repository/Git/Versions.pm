@@ -39,7 +39,7 @@ sub latest_version
    }
    else
    {
-     return "0.1";
+     return "1.1";
    }
 }
 
