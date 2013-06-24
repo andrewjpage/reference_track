@@ -24,11 +24,12 @@ use ReferenceTrack::Repository::PublicRelease;
 has 'database_settings' => ( is => 'ro', isa => 'HashRef', required => 1);
 has 'add_repository'    => ( is => 'ro', isa => 'ArrayRef');
 has 'public_release'    => ( is => 'rw', isa => 'Str');
+has 'public_version'	=> ( is => 'ro', isa => 'Str');
 has 'major_release'     => ( is => 'rw', isa => 'Str');
 has 'minor_release'     => ( is => 'rw', isa => 'Str');
 has 'short_name'        => ( is => 'ro', isa => 'Str');
 has 'creation_details'  => ( is => 'ro', isa => 'ArrayRef');
-has 'starting_version'  => ( is => 'ro', isa => 'Str', default => "0.1");
+has 'starting_version'  => ( is => 'ro', isa => 'Str', default => "1.1");
 has 'upload_to_ftp_site' => ( is => 'rw', isa => 'Str');
 
 has '_repository_management' => ( is => 'ro', lazy => 1, builder => '_build__repository_management');
@@ -111,7 +112,8 @@ sub _make_publically_released
     query             => $self->public_release,
     );
   ReferenceTrack::Repository::PublicRelease->new(
-    repository_search_results => $repository_search
+    repository_search_results => $repository_search,
+    public_version => $self->public_version,
   )->flag_all_as_publically_released();
 }
 
