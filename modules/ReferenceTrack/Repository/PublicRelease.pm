@@ -44,7 +44,7 @@ sub flag_all_as_publically_released
   {
     my $repository = ReferenceTrack::Repository::Git::Versions->new(repository => $repository_row);
     # Tag the repository with the release version and a message
-    $repository->run( tag, '-a' => $self->public_version, '-m' => "Public release version $self->public_version" );
+    $repository->run( 'tag', '-a' => $self->public_version, '-m' => "Public release version $self->public_version" );
     
     $repository_row->version_visibility->update_or_create(
         {
