@@ -35,6 +35,8 @@ sub run
 #perl validate_gff3.pl -gff3_file /my/file.gff3 -out prefix 
 #–config myconfigfile.cfg
 
+ chdir( $self->output_directory ); # Change to desired output directory
+
  my $stdout_of_program = '';
  $stdout_of_program =  "> /dev/null 2>&1"  if($self->debug == 0);
 
@@ -65,7 +67,7 @@ sub _build_output_directory{
 sub _final_error_report {
 	my ($self) = @_;
 	my $error_report_name = $self->prefix.'.report';
-	return "/path/$error_report_name";
+	return $self->output_directory."/".$error_report_name;
 }
 
 
