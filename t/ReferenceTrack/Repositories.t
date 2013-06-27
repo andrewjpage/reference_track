@@ -24,5 +24,8 @@ is 2, @{$repository->find_all_by_name('repo')}, 'get all matching rows';
 is 'some_location.git', $repository->find_all_by_name('repo')->[0]->location,'check that the rows are actually returned for first element';
 is 'some_location.git', $repository->find_all_by_name('repo')->[1]->location,'check that the rows are actually returned for last element';
 
+my @names_array = ('something totally different', 'existing repo', 'another repo' );
+is_deeply (  $repository->find_all_names(), \@names_array, 'Gets all the names of repositories');
+
 done_testing();
 
