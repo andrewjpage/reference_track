@@ -66,7 +66,7 @@ USAGE
 
 # Set defaults
 $prefix ||= "prefix";
-$config_file ||= "/nfs/users/nfs_n/nds/Git_projects/gff3_validator/validate_gff3_nds.cfg";
+$config_file ||= "/nfs/users/nfs_n/nds/Git_projects/gff3_validator/validate_gff3_nds_sqlite.cfg";
 $output_directory ||= getcwd();
 $output_directory  = abs_path($output_directory);
 make_path($output_directory);
