@@ -88,5 +88,5 @@ my $validator = ReferenceTrack::Repository::Validate->new(
 	config	 	  		=> $config_file,
     output_directory 	=> $output_directory,
  	validator_exec		=> $quasr_exec,
-    debug            	s=> $debug,
+    debug            	=> $debug,
 )->run();
