@@ -47,7 +47,6 @@ sub flag_all_as_publically_released
 #    print '-a  $self->public_version -m "Public release version $self->public_version"';
 #    $repository->_git_instance_obj->git_instance->run( checkout => 'master' );
 #    $repository->_git_instance_obj->git_instance->run( tag => '-m', 'Public release' );
-    
     $repository_row->version_visibility->update_or_create(
         {
           version => $repository->latest_version(),
