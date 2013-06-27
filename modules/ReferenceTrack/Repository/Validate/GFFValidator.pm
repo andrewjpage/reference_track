@@ -14,7 +14,7 @@ package ReferenceTrack::Repository::Validate::GFFValidator;
 use Moose;
 
 has 'file' 			   => ( is => 'ro', isa => 'Str', required => 1);
-has 'prefix'    	   => ( is => 'ro', isa => 'String', default => 'validation'); #Change to something with date and time
+has 'prefix'    	   => ( is => 'ro', isa => 'Str', default => 'validation'); #Change to something with date and time
 has 'config'    	   => ( is => 'ro', isa => 'Str', required => 1); #Configuration file 
 has 'output_directory' => ( is => 'ro', isa => 'Str' , builder => '_build_output_directory'); #Default to current working directory
 has 'validator_exec'   => ( is => 'ro', isa => 'Str', required => 1 );
@@ -32,6 +32,7 @@ has 'debug'	           => ( is => 'ro', isa => 'Bool', default  => 0);
 sub run
 {
 
+ my($self) = @_;
 #perl validate_gff3.pl -gff3_file /my/file.gff3 -out prefix 
 #–config myconfigfile.cfg
 

@@ -16,7 +16,6 @@ Usage: validate_gff_file [options]
         -h|help      		   <this message>
         
 Takes a GFF file and runs the GMOD GFF validator. 
-
 # The errors are reported in a file prefix.report in the output directory specified 
 validate_gff_file -f myfile.gff3 -p Pf3D7 -c config.cfg -o /path/..
 
@@ -31,9 +30,9 @@ use Cwd;
 use Cwd 'abs_path';
 use File::Path qw(make_path);
 
-use Bio::AssemblyImprovement::PrimerRemoval::Main;
+use ReferenceTrack::Repository::Validate::GFFValidator;
 
-my ( $gff_file, $prefix, $config, $output_directory, $config_file, $validator_exec, $debug, $help );
+my ( $gff_file, $prefix, $output_directory, $config_file, $validator_exec, $debug, $help );
 
 GetOptions(
 		'f|file=s'      		=> \$gff_file,
@@ -66,8 +65,8 @@ validate_gff_file -f myfile.gff3 -p Pf3D7 -c config.cfg -o /path/..
 USAGE
 
 # Set defaults
-$prefix ||= 'prefix';
-$config ||= '/nfs/users/nfs_n/nds/Git_projects/gff3_validator/validate_gff3_nds.cfg';
+$prefix ||= "prefix";
+$config_file ||= "/nfs/users/nfs_n/nds/Git_projects/gff3_validator/validate_gff3_nds.cfg";
 $output_directory ||= getcwd();
 $output_directory  = abs_path($output_directory);
 make_path($output_directory);
@@ -82,11 +81,11 @@ has 'validator_exec'   => ( is => 'ro', isa => 'Str', required => 1 );
 has 'debug'	           => ( is => 'ro', isa => 'Bool', default  => 0);
 
 
-my $validator = ReferenceTrack::Repository::Validate->new(
+my $validator = ReferenceTrack::Repository::Validate::GFFValidator->new(
     file       	  		=> $gff_file,  
 	prefix	 	 		=> $prefix,
 	config	 	  		=> $config_file,
     output_directory 	=> $output_directory,
- 	validator_exec		=> $quasr_exec,
+ 	validator_exec		=> $validator_exec,
     debug            	=> $debug,
 )->run();
