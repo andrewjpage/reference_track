@@ -18,8 +18,8 @@ use File::Path qw(make_path);
 use ReferenceTrack::Repository::Validate::GFFValidator;
 use ReferenceTrack::Repositories;
 use ReferenceTrack::Database;
-ReferenceTrack::Repository::Search;
-
+use ReferenceTrack::Repository::Search;
+use ReferenceTrack::Repository::Clone;
 
 my ($database, $directory, $help);
 
