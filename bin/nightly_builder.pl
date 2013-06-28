@@ -4,12 +4,11 @@ package ReferenceTrack::Bin::NightlyBuilder;
 # PODNAME: nightly_builder
 =head1 SYNOPSIS
 
-
    
 =cut
 
 BEGIN { unshift( @INC, '../lib' ) }
-use lib "/software/pathogen/internal/prod/lib";
+#use lib "/software/pathogen/internal/prod/lib";
 use Moose;
 use Getopt::Long;
 use Cwd;
@@ -21,14 +20,14 @@ use ReferenceTrack::Repositories;
 use ReferenceTrack::Database;
 
 
-my ($database, $query, $clone);
+my ($database, $query, $help);
 
 GetOptions ('database|d=s'    => \$database,
             'directory|l=s'   => \$query,
             'h|help'          => \$help,            
 );
 
-if($help) die <<USAGE;
+( defined($database) && !$help ) or die <<USAGE;
 Usage: nightly_builder [options]
 	
 		-d|database        	   <name of repositories meta data database (required)>
@@ -46,12 +45,12 @@ $database_settings{ro_user} = $ENV{VRTRACK_RO_USER}  || 'pathpipe_ro';
 $database_settings{rw_user} =  $ENV{VRTRACK_RW_USER} || 'pathpipe_rw';
 $database_settings{password} = $ENV{VRTRACK_PASSWORD};
 
-my $database = ReferenceTrack::Database->new(
-  database_settings     => \%databasesettings
+my $reference_database = ReferenceTrack::Database->new(
+  database_settings     => \%database_settings,
 );
 
 my $repository = ReferenceTrack::Repositories->new(
-  _dbh     => $database->ro_dbh;
+  _dbh     => $reference_database->ro_dbh,
   );
   
 # Get a list of all the organism names. 
