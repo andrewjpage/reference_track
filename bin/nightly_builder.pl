@@ -18,12 +18,13 @@ use File::Path qw(make_path);
 use ReferenceTrack::Repository::Validate::GFFValidator;
 use ReferenceTrack::Repositories;
 use ReferenceTrack::Database;
+ReferenceTrack::Repository::Search;
 
 
-my ($database, $query, $help);
+my ($database, $directory, $help);
 
 GetOptions ('database|d=s'    => \$database,
-            'directory|l=s'   => \$query,
+            'directory|l=s'   => \$directory,
             'h|help'          => \$help,            
 );
 
@@ -35,6 +36,12 @@ Usage: nightly_builder [options]
         -h|help      		   <this message>
 
 USAGE
+
+$directory ||= getcwd();
+$directory  = abs_path($directory);
+make_path($directory);
+
+chdir( $directory ); # Change to desired directory
 
 # database settings
 my %database_settings;
@@ -51,7 +58,9 @@ my $reference_database = ReferenceTrack::Database->new(
 
 my $repository = ReferenceTrack::Repositories->new(
   _dbh     => $reference_database->ro_dbh,
-  );
+);
+  
+
   
 # Get a list of all the organism names. 
 # For each, clone the repository and validate the data.
@@ -60,9 +69,15 @@ my $repository = ReferenceTrack::Repositories->new(
 
 my $organism_names = $repository->find_all_names();
 foreach my $name (@$organism_names){
-
-	print $name, "\n";
-
+	# Clone 
+	my $repository_search = ReferenceTrack::Repository::Search->new(
+  		database_settings => \%database_settings,
+  		query             => $name,
+  	);
+  	ReferenceTrack::Repository::Clone->new(
+    	repository_search_results => $repository_search
+  	)->clone();
+  	
 }
 
 
