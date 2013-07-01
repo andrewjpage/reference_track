@@ -45,3 +45,7 @@ sub get_commit_authors
 
 
 }
+
+no Moose;
+__PACKAGE__->meta->make_immutable;
+1;
