@@ -24,6 +24,7 @@ use ReferenceTrack::Repository::Clone;
 use ReferenceTrack::Repository::Validate::GFFValidator;
 use ReferenceTrack::Repository::Git::Log;
 
+
 my ($database, $directory, $help);
 
 GetOptions ('database|d=s'    => \$database,
@@ -44,7 +45,7 @@ $directory ||= getcwd();
 $directory  = abs_path($directory);
 make_path($directory);
 
-chdir( $directory ); # Change to desired directory
+chdir( $directory ); # Change to desired directory. MIght eventually just use a temp directory
 
 # database settings
 my %database_settings;
@@ -54,6 +55,7 @@ $database_settings{port} = $ENV{VRTRACK_PORT} || 3347;
 $database_settings{ro_user} = $ENV{VRTRACK_RO_USER}  || 'pathpipe_ro';
 $database_settings{rw_user} =  $ENV{VRTRACK_RW_USER} || 'pathpipe_rw';
 $database_settings{password} = $ENV{VRTRACK_PASSWORD};
+
 
 my $reference_database = ReferenceTrack::Database->new(
   database_settings     => \%database_settings,
@@ -73,50 +75,51 @@ my $repository = ReferenceTrack::Repositories->new(
 my $organism_names = $repository->find_all_names();
 foreach my $name (@$organism_names){
 	chdir( $directory ); # Change to desired directory
-	# Clone 
+
 	my $repository_search = ReferenceTrack::Repository::Search->new(
   		database_settings => \%database_settings,
   		query             => $name,
   	);
   	
-  	ReferenceTrack::Repository::Clone->new(
-    	repository_search_results => $repository_search
-  	)->clone();
+  	# For each repository returned by the search (should usually be one), do the following 
+  	for my $repository_row (@{$repository_search->_repository_query_results}) {
+
+  		my $logger = ReferenceTrack::Repository::Git::Log->new(
+  			reference_location => $repository_row->location,
+  			since => '2.weeks', 	
+  		);
   	
-  	my $logger = ReferenceTrack::Repository::Git::Log->new(
-  		reference_location => $repository_search->location,
-  		since => '2.weeks', 	
-  	);
-  	
-  	my $authors = $logger->get_commit_authors();
-  	print Dumper($authors);
+  		my $authors = $logger->get_commit_authors();
+  		print Dumper($authors);
+  		
+  	}
   	
 
 	# Hacky so please re-write!
-	$name =~ s/ /_/g;
-	
-	chdir($name);
+# 	$name =~ s/ /_/g;
+# 	
+# 	chdir($name);
 	#Get the GFF files
-	opendir my $dir, $directory.'/'.$name or die "Cannot open directory: $name $!";
-	my @files = readdir $dir;
-	closedir $dir;
-	foreach my $file (@files){
-		
-		if($file !~ /gff3/){
-			next;
-		}
-		print "Got $file \n";
-		
-		my $prefix = $file."_".localtime();
-		my $validator = ReferenceTrack::Repository::Validate::GFFValidator->new(
-                     file       	=> $directory."/".$name."/".$file,  
-	prefix	 	 		=> $prefix,
-	config	 	  		=> '/nfs/users/nfs_n/nds/Git_projects/gff3_validator/validate_gff3_nds_sqlite.cfg',
-	output_directory	        => $directory,
-	validator_exec		        => '/nfs/users/nfs_n/nds/Git_projects/gff3_validator/validate_gff3.pl',
-	)->run();
-
-	}
+# 	opendir my $dir, $directory.'/'.$name or die "Cannot open directory: $name $!";
+# 	my @files = readdir $dir;
+# 	closedir $dir;
+# 	foreach my $file (@files){
+# 		
+# 		if($file !~ /gff3/){
+# 			next;
+# 		}
+# 		print "Got $file \n";
+# 		
+# 		my $prefix = $file."_".localtime();
+# 		my $validator = ReferenceTrack::Repository::Validate::GFFValidator->new(
+#                      file       	=> $directory."/".$name."/".$file,  
+# 	prefix	 	 		=> $prefix,
+# 	config	 	  		=> '/nfs/users/nfs_n/nds/Git_projects/gff3_validator/validate_gff3_nds_sqlite.cfg',
+# 	output_directory	        => $directory,
+# 	validator_exec		        => '/nfs/users/nfs_n/nds/Git_projects/gff3_validator/validate_gff3.pl',
+# 	)->run();
+# 
+# 	}
   	
 }
 
