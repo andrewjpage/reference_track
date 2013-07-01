@@ -14,6 +14,7 @@ use Getopt::Long;
 use Cwd;
 use Cwd 'abs_path';
 use File::Path qw(make_path);
+use Data::Dumper;
 
 use ReferenceTrack::Repository::Validate::GFFValidator;
 use ReferenceTrack::Repositories;
@@ -21,6 +22,7 @@ use ReferenceTrack::Database;
 use ReferenceTrack::Repository::Search;
 use ReferenceTrack::Repository::Clone;
 use ReferenceTrack::Repository::Validate::GFFValidator;
+use ReferenceTrack::Repository::Git::Log;
 
 my ($database, $directory, $help);
 
@@ -76,9 +78,19 @@ foreach my $name (@$organism_names){
   		database_settings => \%database_settings,
   		query             => $name,
   	);
+  	
   	ReferenceTrack::Repository::Clone->new(
     	repository_search_results => $repository_search
   	)->clone();
+  	
+  	my $logger = ReferenceTrack::Repository::Git::Log->new(
+  		reference_location => $repository_search->location,
+  		since => '2.weeks', 	
+  	);
+  	
+  	my $authors = $logger->get_commit_authors();
+  	print Dumper($authors);
+  	
 
 	# Hacky so please re-write!
 	$name =~ s/ /_/g;
