@@ -11,6 +11,7 @@ use ReferenceTrack::Repository::Git::Log;
 package ReferenceTrack::Repository::Git::Log;
 use Moose;
 use ReferenceTrack::Repository::Git::Instance;
+#use String::Util 'trim';
 
 has 'reference_location' => ( is => 'ro', isa => 'Str', required => 1 );     # git reference (can be url).
 has 'since'  => ( is => 'ro', isa => 'Str', default => 'yesterday' );     # how long back should the logs go? default is the last 24 hours
@@ -28,22 +29,46 @@ sub _build__temp_repository
 =head2 METHOD
 
   Arg [1]    : 
-  Example    : 
-  Description: Returns the names and email addresses of the authors who made commits in the time period specified
-  Returntype : Arrayref
+  Example    : my $logger = ReferenceTrack::Repository::Git::Log->new(
+  									reference_location => $repository_row->location,
+  									since => '2.weeks', 	
+  			   );
+  			   my $authors = $logger->get_commit_authors();
+  Description: Returns the names and email addresses of the authors who made commits in the time period specified (default: last 24 hours)
+  Returntype : Hashref
 
 =cut
 
 sub get_commit_authors
 {
 	my ($self) = @_;
-	my @commits = $self->_temp_repository->git_instance->run('git log' => '--pretty', 'format:"%an %ae"', '--since', $self->since);
-	return \@commits;
+	my @commits = $self->_temp_repository->git_instance->run('log' => '--pretty=format:"%an | %ae"', '--since='.$self->since);
+	# Put the names and email addresses into a hash
+	my %emails_and_names;
+	for my $commit (@commits){
+		$commit =~ s/^"//g; #Trim leading and trailing quotes
+		$commit =~ s/"$//g;
+		my @components = split(/\|/, $commit);
+		if(@components != 2) { 
+			next;
+		}
+		my $email = $self->_trim($components[1]);
+		my $name = $self->_trim($components[0]);
+		if(!exists $emails_and_names{$email}){
+			$emails_and_names{$email} = $name;
+		}
+	}
+	return \%emails_and_names;
 
 
+}
 
-
-
+sub _trim 
+{
+	my ($self, $word) = @_;
+	$word =~ s/^\s+//; #remove leading spaces
+	$word =~ s/\s+$//; #remove trailing spaces
+	return $word;
 }
 
 no Moose;
