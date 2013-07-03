@@ -1,9 +1,10 @@
 #!/usr/bin/env perl
 package ReferenceTrack::Bin::NightlyBuilder;
-# ABSTRACT: Run a set of procedures on all the repositories (validate to start with)
+# ABSTRACT: Run a set of procedures on all the repositories 
 # PODNAME: nightly_builder
 =head1 SYNOPSIS
 
+perl bin/nightly_builder.pl --database=pathogen_reference_track_test
    
 =cut
 
@@ -14,7 +15,7 @@ use Getopt::Long;
 use Cwd;
 use Cwd 'abs_path';
 use File::Path qw(make_path);
-use Data::Dumper;
+
 
 use ReferenceTrack::Repository::Validate::GFFValidator;
 use ReferenceTrack::Repositories;
@@ -22,7 +23,9 @@ use ReferenceTrack::Database;
 use ReferenceTrack::Repository::Search;
 use ReferenceTrack::Repository::Clone;
 use ReferenceTrack::Repository::Validate::GFFValidator;
+use ReferenceTrack::Repository::Git::Instance;
 use ReferenceTrack::Repository::Git::Log;
+use ReferenceTrack::EmailSender;
 
 
 my ($database, $directory, $help);
@@ -74,6 +77,7 @@ my $repository = ReferenceTrack::Repositories->new(
 
 my $organism_names = $repository->find_all_names();
 foreach my $name (@$organism_names){
+	print "Working with repository: $name \n";
 	chdir( $directory ); # Change to desired directory
 
 	my $repository_search = ReferenceTrack::Repository::Search->new(
@@ -81,46 +85,55 @@ foreach my $name (@$organism_names){
   		query             => $name,
   	);
   	
-  	# For each repository returned by the search (should usually be one), do the following 
+
   	for my $repository_row (@{$repository_search->_repository_query_results}) {
 
+  		my $git_instance  = ReferenceTrack::Repository::Git::Instance->new(location => $repository_row->location); 
+  		# print "Getting commits \n";
   		my $logger = ReferenceTrack::Repository::Git::Log->new(
-  			reference_location => $repository_row->location,
-  			since => '2.weeks', 	
-  		);
-  	
-  		my $authors = $logger->get_commit_authors();
-  		print Dumper($authors);
+  				reference_location => $repository_row->location,
+  				since => '2.weeks', 	
+  			);  	
+  		my $commits = $logger->get_commit_authors(); #All the users who made changes to this repository 
+  		
+
+  		my @files = $git_instance->git_instance->run('ls-files'); #Get all the files in this repository
+  		
+		foreach my $file (@files){
+			if($file !~ /gff3$/){ #Does not yet handle zipped gff files
+				next; 		
+			}
+			my $file_with_path = $git_instance->_working_directory."/".$file;
+
+			#Generate suitable prefix
+			my($second, $minute, $hour, $dayOfMonth, $month, $yearOffset, $dayOfWeek, $dayOfYear, $daylightSavings) = localtime();
+			my $prefix = join("_", $file, $dayOfMonth, $month+1, $yearOffset+1900); #Changed to be the GFF filename, so that it can accommodate multiple GFF files for an organism
+  			$prefix =~ s/\W/_/g;
+  			
+  			my $validator = ReferenceTrack::Repository::Validate::GFFValidator->new(
+                    file   				=> $file_with_path,  
+					prefix	 	 		=> $prefix,
+					config	 	  		=> '/nfs/users/nfs_n/nds/Git_projects/gff3_validator/validate_gff3_nds_sqlite.cfg',
+					output_directory	=> $directory,
+					validator_exec		=> '/nfs/users/nfs_n/nds/Git_projects/gff3_validator/validate_gff3.pl',
+			)->run();
+
+			# Change so that emails are only sent if errors are found
+  			foreach my $email_address (keys %$commits){
+    			my $email_sender = ReferenceTrack::EmailSender->new(
+      				email_from_address  => 'pathdev@sanger.ac.uk',
+      				email_to_address    => $email_address,
+      				user_name			=> $$commits{$email_address},
+      				error_file			=> $validator->final_error_report,
+      				organism			=> $name,
+      			);
+      			$email_sender->send_email; 
+			}
+		}
+
   		
   	}
-  	
-
-	# Hacky so please re-write!
-# 	$name =~ s/ /_/g;
-# 	
-# 	chdir($name);
-	#Get the GFF files
-# 	opendir my $dir, $directory.'/'.$name or die "Cannot open directory: $name $!";
-# 	my @files = readdir $dir;
-# 	closedir $dir;
-# 	foreach my $file (@files){
-# 		
-# 		if($file !~ /gff3/){
-# 			next;
-# 		}
-# 		print "Got $file \n";
-# 		
-# 		my $prefix = $file."_".localtime();
-# 		my $validator = ReferenceTrack::Repository::Validate::GFFValidator->new(
-#                      file       	=> $directory."/".$name."/".$file,  
-# 	prefix	 	 		=> $prefix,
-# 	config	 	  		=> '/nfs/users/nfs_n/nds/Git_projects/gff3_validator/validate_gff3_nds_sqlite.cfg',
-# 	output_directory	        => $directory,
-# 	validator_exec		        => '/nfs/users/nfs_n/nds/Git_projects/gff3_validator/validate_gff3.pl',
-# 	)->run();
-# 
-# 	}
-  	
 }
+  	
 
 
