@@ -1,6 +1,6 @@
 =head1 GFFValidator
 
-GFFValidator - Wrapper around the GMOD GFF validator, and also includes any extra checks
+GFFValidator - Wrapper around the GMOD GFF validator, and should also eventually include any extra GFF checks 
 
 =head1 SYNOPSIS
 
@@ -33,8 +33,6 @@ sub run
 {
 
  my($self) = @_;
-#perl validate_gff3.pl -gff3_file /my/file.gff3 -out prefix 
-#–config myconfigfile.cfg
 
  chdir( $self->output_directory ); # Change to desired output directory
 
@@ -53,8 +51,12 @@ sub run
             )
         )
  );
+ 
+ #There is also a log file produced which we shall delete
+ my $log_file_name = $self->prefix.'.log';
+ unlink ($self->output_directory."/".$log_file_name);
 
-return $self;
+ return $self;
 
 }
 
@@ -65,7 +67,7 @@ sub _build_output_directory{
 
 
 
-sub _final_error_report {
+sub final_error_report {
 	my ($self) = @_;
 	my $error_report_name = $self->prefix.'.report';
 	return $self->output_directory."/".$error_report_name;
