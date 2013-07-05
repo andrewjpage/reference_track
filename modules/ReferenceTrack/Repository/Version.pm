@@ -19,6 +19,7 @@ use ReferenceTrack::Repository::Types;
 
 has 'version_number' => ( is => 'ro', isa => 'ReferenceTrack::Repository::Version::Number',  required => 1);
 
+# next minor version increment
 sub next_version
 {
   my($self) = @_;
@@ -37,6 +38,7 @@ sub next_version
   return sprintf("%d.%d", $major_version, $minor_version +1);
 }
 
+# next major version increment
 sub next_major_version
 {
   my($self) = @_;
