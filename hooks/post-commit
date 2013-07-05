@@ -1,0 +1,24 @@
+#!/usr/bin/env perl
+#
+# An hook script that is called after a successful
+# commit is made.
+# When a user commits, create a new branch with a (minor)
+# update to version number, push and change back to master branch.
+# To enable this hook, rename this file to "post-commit".
+
+use ReferenceTrack::Repository::Git::Versions;
+use ReferenceTrack::Repository::Version;
+use ReferenceTrack::Repository::Git::Instance;
+
+my $location = `git config --get remote.origin.url`;
+chomp($location);
+
+my $git_instance = ReferenceTrack::Repository::Git::Instance->new( location => $location );
+my $repository = ReferenceTrack::Repository::Git::Versions->new( _git_instance_obj => $git_instance );
+
+my $next_version = ReferenceTrack::Repository::Version->new(version_number => $repository->latest_version())->next_version;
+
+my $create_new_branch = `git checkout -b $next_version`; #Create a new branch with the next version number
+my $push = `git push origin $next_version`;
+my $change_back_to_master = `git checkout master`;
+
