@@ -71,7 +71,7 @@ $database_settings{ro_user} = $ENV{VRTRACK_RO_USER}  || 'pathpipe_ro';
 $database_settings{rw_user} =  $ENV{VRTRACK_RW_USER} || 'pathpipe_rw';
 $database_settings{password} = $ENV{VRTRACK_PASSWORD};
 
-$starting_version ||= "1.1"; #We now adopt an internal versioning system of X.Y where X is the version of the reference, and Y is the version of the annotation. We always start with 1.1
+$starting_version ||= "1.0"; #We start with 1.0. During the first commit, this is updated to 1.1
 
 if(defined($public_release_repository))
 {
