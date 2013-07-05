@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# An hook script that is called after a successful
+# A hook script that is called after a successful
 # commit is made.
 # When a user commits, create a new branch with a (minor)
 # update to version number, push and change back to master branch.
@@ -9,7 +9,9 @@
 use ReferenceTrack::Repository::Git::Versions;
 use ReferenceTrack::Repository::Version;
 use ReferenceTrack::Repository::Git::Instance;
+use ReferenceTrack::Repository::Search;
 
+# Create a branch with the next version number
 my $location = `git config --get remote.origin.url`;
 chomp($location);
 
@@ -18,7 +20,17 @@ my $repository = ReferenceTrack::Repository::Git::Versions->new( _git_instance_o
 
 my $next_version = ReferenceTrack::Repository::Version->new(version_number => $repository->latest_version())->next_version;
 
-my $create_new_branch = `git checkout -b $next_version`; #Create a new branch with the next version number
+my $create_new_branch = `git checkout -b $next_version`; 
 my $push = `git push origin $next_version`;
 my $change_back_to_master = `git checkout master`;
+
+# Update the version details in the database
+my $repo_name = `basename \`git rev-parse --show-toplevel\``;
+chomp($repo_name);
+$repo_name =~ s/_/ /g;
+
+my $command = "reference_track_management.pl  --minor_release '$repo_name' --database pathogen_reference_track_test";
+#print $command, "\n";
+`$command`;
+
 
