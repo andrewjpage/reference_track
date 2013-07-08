@@ -33,8 +33,6 @@ has 'public_version'	=> ( is => 'ro', isa => 'Str');
 
 =cut
 
-
-
 sub flag_all_as_publically_released
 {
   my ($self)= @_; 
@@ -43,10 +41,6 @@ sub flag_all_as_publically_released
   for my $repository_row (@{$self->repository_search_results->_repository_query_results})
   {
     my $repository = ReferenceTrack::Repository::Git::Versions->new(repository => $repository_row);
-    # Tag the repository with the release version and a message  '-m "initial"'
-#    print '-a  $self->public_version -m "Public release version $self->public_version"';
-#    $repository->_git_instance_obj->git_instance->run( checkout => 'master' );
-#    $repository->_git_instance_obj->git_instance->run( tag => '-m', 'Public release' );
     $repository_row->version_visibility->update_or_create(
         {
           version => $repository->latest_version(),
@@ -59,6 +53,14 @@ sub flag_all_as_publically_released
   return 1;
 }
 
+=head2 flag_all_with_new_version
+
+  Arg [1]    : 
+  Example    :
+  Description: Calculate the next version for a given repository, update the database and create a version branch
+  Returntype : 
+
+=cut
 
 sub _flag_all_with_new_version
 {
@@ -83,7 +85,43 @@ sub _flag_all_with_new_version
   return 1;
 }
 
+=head2 flag_all_with_specified_version
 
+  Arg [1]    : Version number
+  Example    :
+  Description: Update a repository in the database with a specified version (rather than calculating the next version in the method).
+  			   Useful when you have the next version calculated already in a previous step.
+  Returntype : 
+
+=cut
+
+sub _flag_all_with_specified_version
+{
+  my ($self, $version)= @_; 
+  return unless( defined($self->repository_search_results->_repository_query_results));
+  
+  for my $repository_row (@{$self->repository_search_results->_repository_query_results})
+  {
+    $repository_row->version_visibility->update_or_create(
+        {
+          version => $version,
+          visible_on_ftp_site => 0,
+        }
+      );
+  }
+
+  return 1;
+}
+
+
+=head2 flag_all_as_major_release
+
+  Arg [1]    : 
+  Example    :
+  Description: Do a major update to version number
+  Returntype : 
+  
+=cut
 
 sub flag_all_as_major_release
 {
@@ -91,6 +129,14 @@ sub flag_all_as_major_release
   return $self->_flag_all_with_new_version('next_major_version');
 }
 
+=head2 flag_all_as_major_release
+
+  Arg [1]    : 
+  Example    :
+  Description: Do a minor update to version number
+  Returntype : 
+  
+=cut
 sub flag_all_as_minor_release
 {
   my ($self)= @_; 
