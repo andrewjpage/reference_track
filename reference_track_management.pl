@@ -27,7 +27,7 @@ use Getopt::Long;
 
 use ReferenceTrack::Controller;
 
-my ($database, @repository_details, $public_release_repository,@creation_details,$starting_version, $public_version, $short_name, $major_release,$minor_release,$upload_to_ftp_site);
+my ($database, @repository_details, $public_release_repository,@creation_details,$starting_version, $public_version, $short_name, $major_release,$minor_release, $update_version, $version, $upload_to_ftp_site);
 
 GetOptions ('database|d=s'    => \$database,
             'a|add=s{2}'         => \@repository_details,
@@ -38,11 +38,13 @@ GetOptions ('database|d=s'    => \$database,
             'n|short_name=s'       => \$short_name,
             'm|major_release=s'    => \$major_release,
             'd|minor_release=s'    => \$minor_release,
+            'b|update_version=s'   => \$update_version,
+            't|version=s'		   => \$version,
             'u|upload_to_ftp_site:s' => \$upload_to_ftp_site
             
 );
 
-((@repository_details == 2) || defined $upload_to_ftp_site || ($public_release_repository && $public_version) || $major_release || $minor_release || (@creation_details == 3 && $short_name))or die <<USAGE;
+((@repository_details == 2) || defined $upload_to_ftp_site || ($public_release_repository && $public_version) || $major_release || $minor_release || $update_version || (@creation_details == 3 && $short_name))or die <<USAGE;
 Usage: $0 [options]
 Query the reference tracking system
 
@@ -53,6 +55,7 @@ reference_track_management.pl --create Plasmodium falciparum 3D7 --starting_vers
 reference_track_management.pl --public_release "3D7" --public_version 4.0
 reference_track_management.pl --major_release "3D7"
 reference_track_management.pl --minor_release "3D7"
+reference_track_management.pl --update_version "3D7" --version 3.1
 
 reference_track_management.pl --upload_to_ftp_site ""
 reference_track_management.pl --upload_to_ftp_site "3D7"
@@ -93,6 +96,14 @@ elsif(defined($minor_release))
   ReferenceTrack::Controller->new(
       database_settings => \%database_settings,
       minor_release     => $minor_release,
+    )->run();
+}
+elsif(defined($update_version))
+{
+  ReferenceTrack::Controller->new(
+      database_settings => \%database_settings,
+      update_version     => $update_version,
+      version => $version,
     )->run();
 }
 elsif(defined($upload_to_ftp_site))
