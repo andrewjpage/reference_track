@@ -63,9 +63,11 @@ my $repository_search = ReferenceTrack::Repository::Search->new(
   );
 $repository_search->print_report();
 
+# Clone the repository and copy over the git hook file
 if($clone)
 {
   ReferenceTrack::Repository::Clone->new(
     repository_search_results => $repository_search
   )->clone();
+  
 }
