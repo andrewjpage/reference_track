@@ -15,9 +15,13 @@ package ReferenceTrack::Repository::Clone;
 use Moose;
 use ReferenceTrack::Repository::Search;
 use Git::Repository;
+use File::Copy;
+use Cwd;
+use Cwd 'abs_path';
 
 has 'repository_search_results' => ( is => 'ro', isa => 'ReferenceTrack::Repository::Search',  required   => 1 );
 has '_repositories'             => ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__repositories');
+has 'hook_file'					=> ( is => 'ro', isa => 'Str', default => '/nfs/users/nfs_n/nds/Git_projects/reference_track/hooks/post-commit');
 
 sub _build__repositories
 {
@@ -39,6 +43,13 @@ sub clone
    for my $repository_location (@{$self->_repositories})
    {
      Git::Repository->run( clone => $repository_location );
+    
+     # Also copy over the git hook file to the right directory
+     $repository_location =~ m/.*\/(.*)\.git$/;
+     my $directory_name = $1;
+     my $path = getcwd()."/".$directory_name."/".".git/hooks/";
+     copy($self->hook_file, $path);
+     
    }
 }
 no Moose;
