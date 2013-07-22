@@ -45,10 +45,12 @@ sub clone
      Git::Repository->run( clone => $repository_location );
     
      # Also copy over the git hook file to the right directory
+     # and make it executable by all
      $repository_location =~ m/.*\/(.*)\.git$/;
      my $directory_name = $1;
      my $path = getcwd()."/".$directory_name."/".".git/hooks/";
      copy($self->hook_file, $path);
+     `chmod a+x $path."/post-commit"`;
      
    }
 }
