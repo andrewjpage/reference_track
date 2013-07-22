@@ -100,9 +100,11 @@ foreach my $name (@$organism_names){
   		my @files = $git_instance->git_instance->run('ls-files'); #Get all the files in this repository
   		
 		foreach my $file (@files){
-			if($file !~ /gff3$/){ #Does not yet handle zipped gff files
+			print "Found $file \n";
+			if($file !~ /gff$/){ #Does not yet handle zipped gff files
 				next; 		
 			}
+			print "Working with $file \n";
 			my $file_with_path = $git_instance->_working_directory."/".$file;
 
 			#Generate suitable prefix
@@ -118,17 +120,21 @@ foreach my $name (@$organism_names){
 					validator_exec		=> '/nfs/users/nfs_n/nds/Git_projects/gff3_validator/validate_gff3.pl',
 			)->run();
 
-			# Change so that emails are only sent if errors are found
-  			foreach my $email_address (keys %$commits){
-    			my $email_sender = ReferenceTrack::EmailSender->new(
-      				email_from_address  => 'pathdev@sanger.ac.uk',
-      				email_to_address    => $email_address,
-      				user_name			=> $$commits{$email_address},
-      				error_file			=> $validator->final_error_report,
-      				organism			=> $name,
-      			);
-      			$email_sender->send_email; 
+			# Email if there are errors
+			if($validator->final_error_report){
+  				foreach my $email_address (keys %$commits){
+    				my $email_sender = ReferenceTrack::EmailSender->new(
+      					email_from_address  => 'pathdev@sanger.ac.uk',
+      					email_to_address    => $email_address,
+      					user_name			=> $$commits{$email_address},
+      					error_file			=> $validator->final_error_report,
+      					organism			=> $name,
+      				);
+      				$email_sender->send_email; 
+				}
 			}
+			
+			
 		}
 
   		
