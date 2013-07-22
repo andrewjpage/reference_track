@@ -78,8 +78,8 @@ sub _flag_all_with_new_version
         }
       );
     # create a version branch on the head of the remote repository
-    my $remote_repository = ReferenceTrack::Repository::Git::Remote->new( starting_version => $next_version, location => $repository_row->location);
-    $remote_repository->create_version_branch();
+    #my $remote_repository = ReferenceTrack::Repository::Git::Remote->new( starting_version => $next_version, location => $repository_row->location);
+    #$remote_repository->create_version_branch();
   }
 
   return 1;
@@ -108,6 +108,10 @@ sub _flag_all_with_specified_version
           visible_on_ftp_site => 0,
         }
       );
+  
+  # create a version branch on the head of the remote repository
+  #my $remote_repository = ReferenceTrack::Repository::Git::Remote->new( starting_version => $version, location => $repository_row->location);
+  #$remote_repository->create_version_branch();
   }
 
   return 1;
