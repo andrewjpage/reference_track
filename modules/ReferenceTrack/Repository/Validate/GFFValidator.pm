@@ -18,6 +18,7 @@ has 'prefix'    	   => ( is => 'ro', isa => 'Str', default => 'validation'); #Ch
 has 'config'    	   => ( is => 'ro', isa => 'Str', required => 1); #Configuration file 
 has 'output_directory' => ( is => 'ro', isa => 'Str' , builder => '_build_output_directory'); #Default to current working directory
 has 'validator_exec'   => ( is => 'ro', isa => 'Str', required => 1 );
+has 'error_free_line'  => ( is => 'ro', isa => 'Str', default => "NO ERRORS OR WARNINGS HAVE BEEN ISSUED" ); #The line to look for in the error report to indicate that the GFF file was error free
 has 'debug'	           => ( is => 'ro', isa => 'Bool', default  => 0);
 
 =head2 run
@@ -66,11 +67,16 @@ sub _build_output_directory{
 }
 
 
-
+# Only return a value if there are errors in the report. If not, delete the report and return null
 sub final_error_report {
 	my ($self) = @_;
-	my $error_report_name = $self->prefix.'.report';
-	return $self->output_directory."/".$error_report_name;
+	my $error_report_name = $self->output_directory."/".$self->prefix.'.report';
+	my $no_errors = `grep \"$self->error_free_line\" $error_report_name`;
+	if($no_errors){
+		unlink ($error_report_name);
+		return;
+	}
+	return $error_report_name;
 }
 
 
