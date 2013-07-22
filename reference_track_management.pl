@@ -33,7 +33,7 @@ GetOptions ('database|d=s'    => \$database,
             'a|add=s{2}'         => \@repository_details,
             'p|public_release=s'   => \$public_release_repository,
             'c|create=s{3}'        => \@creation_details,
-            's|starting_version=s' => \$starting_version,
+            's|starting_version=s' => \$starting_version, #Not needed anymore. Change later.
             'v|public_version=s'   => \$public_version,
             'n|short_name=s'       => \$short_name,
             'm|major_release=s'    => \$major_release,
