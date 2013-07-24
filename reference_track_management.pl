@@ -65,7 +65,7 @@ reference_track_management.pl --upload_to_ftp_site "3D7"
 USAGE
 ;
 
-$database ||= 'pathogen_reference_track';
+$database ||= 'pathogen_reference_track_test';
 my %database_settings;
 $database_settings{database} = $database ;
 $database_settings{host} = $ENV{VRTRACK_HOST} || 'mcs6';
