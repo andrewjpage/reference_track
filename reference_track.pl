@@ -57,7 +57,7 @@ Clone, commit to or update a repository
 USAGE
 ;
 
-$database ||= 'pathogen_reference_track';
+$database ||= 'pathogen_reference_track_test';
 my %database_settings;
 $database_settings{database} = $database ;
 $database_settings{host} = $ENV{VRTRACK_HOST} || 'mcs6';
@@ -94,6 +94,7 @@ if($add)
 		       the error message. \n";
 	
 	}
+	my $git_push = `git push origin master`;
 }
 
 # Run git fetch and git pull 
