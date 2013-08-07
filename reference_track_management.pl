@@ -27,7 +27,7 @@ use Getopt::Long;
 
 use ReferenceTrack::Controller;
 
-my ($database, @repository_details, $public_release_repository,@creation_details,$starting_version, $public_version, $short_name, $major_release,$minor_release, $update_version, $version, $upload_to_ftp_site);
+my ($database, @repository_details, $public_release_repository,@creation_details,$starting_version, $public_version, $short_name, $major_release,$minor_release, $update_version, $version, $upload_to_ftp_site, $list);
 
 GetOptions ('database|d=s'    => \$database,
             'a|add=s{2}'         => \@repository_details,
@@ -40,11 +40,12 @@ GetOptions ('database|d=s'    => \$database,
             'd|minor_release=s'    => \$minor_release,
             'b|update_version=s'   => \$update_version,
             't|version=s'		   => \$version,
-            'u|upload_to_ftp_site:s' => \$upload_to_ftp_site
+            'u|upload_to_ftp_site=s' => \$upload_to_ftp_site,
+            'l|list' 			   => \$list
             
 );
 
-((@repository_details == 2) || defined $upload_to_ftp_site || ($public_release_repository && $public_version) || $major_release || $minor_release || $update_version || (@creation_details == 3 && $short_name))or die <<USAGE;
+((@repository_details == 2) || defined $upload_to_ftp_site || ($public_release_repository && $public_version) || $major_release || $minor_release || $update_version || $list || (@creation_details == 3 && $short_name))or die <<USAGE;
 Usage: $0 [options]
 Query the reference tracking system
 
@@ -60,12 +61,14 @@ reference_track_management.pl --update_version "3D7" --version 3.1
 reference_track_management.pl --upload_to_ftp_site ""
 reference_track_management.pl --upload_to_ftp_site "3D7"
 
+reference_track_management.pl --list (to list all available repositories)
+
  Options:
      -a|add     A name for your repository (can be anything), and the location of the repository.
 USAGE
 ;
 
-$database ||= 'pathogen_reference_track_test';
+$database ||= 'pathogen_reference_track_test'; # Change when tests are done
 my %database_settings;
 $database_settings{database} = $database ;
 $database_settings{host} = $ENV{VRTRACK_HOST} || 'mcs6';
@@ -112,6 +115,18 @@ elsif(defined($upload_to_ftp_site))
       database_settings  => \%database_settings,
       upload_to_ftp_site => $upload_to_ftp_site,
     )->run();
+}
+elsif(defined($list)) #Print a list of all available repositories (which should be organism names)
+{
+	my $reference_database = ReferenceTrack::Database->new(
+  		database_settings     => \%database_settings,
+	);
+	my $repository = ReferenceTrack::Repositories->new(
+  		_dbh     => $reference_database->ro_dbh,
+	);
+	my $organism_names = $repository->find_all_names();
+	print join ("\n", @$organism_names); 
+ 
 }
 else
 {
