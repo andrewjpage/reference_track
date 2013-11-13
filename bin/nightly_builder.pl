@@ -4,7 +4,7 @@ package ReferenceTrack::Bin::NightlyBuilder;
 # PODNAME: nightly_builder
 =head1 SYNOPSIS
 
-perl bin/nightly_builder.pl --database=pathogen_reference_track_test
+perl bin/nightly_builder.pl --database=pathogen_reference_track
    
 =cut
 
@@ -92,8 +92,9 @@ foreach my $name (@$organism_names){
   		# print "Getting commits \n";
   		my $logger = ReferenceTrack::Repository::Git::Log->new(
   				reference_location => $repository_row->location,
-  				since => '2.weeks', 	
+  				since => '2.weeks', 	# Change to suitable time frame
   			);  	
+  			
   		my $commits = $logger->get_commit_authors(); #All the users who made changes to this repository 
   		
 
@@ -122,7 +123,7 @@ foreach my $name (@$organism_names){
 
 			# Email if there are errors
 			if($validator->final_error_report){
-  				foreach my $email_address (keys %$commits){
+  				foreach my $email_address (keys %$commits){ # If there are no commits in the specified time frame, no emails will be sent. TODO: Should an email be sent to 
     				my $email_sender = ReferenceTrack::EmailSender->new(
       					email_from_address  => 'pathdev@sanger.ac.uk',
       					email_to_address    => $email_address,
