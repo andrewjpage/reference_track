@@ -43,6 +43,10 @@ for my $changed_file (@checked_files) { # Yes yes, a for loop is used here even 
 	)->run;
 	
 	# If there are errors, then print a statement an exit with 1
+	if($gff_validator->status){
+		print "$changed_file contains errors. See ".$gff_validator->error_report." for a list. Please fix them before trying again.\n";
+		exit 1;
+	}
 	
 	
 }
