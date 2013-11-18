@@ -6,12 +6,13 @@ reference_track_management.pl
 
 =head1 SYNOPSIS
 
-reference_track_management.pl [-e (staging|production) ] --add "My repo name" git://example.com/example.git
+Example (creating a repository):
+
+reference_track_management.pl --create Plasmodium falciparum 3D7 --short_name Pf3D7
 
 =head1 DESCRIPTION
 
-This script allows you to query the reference tracking database.
-
+This script allows you to perform the 'housekeeping' tasks: create a repository, update a repository, make it public etc...
 =head1 CONTACT
 
 path-help@sanger.ac.uk
@@ -29,8 +30,8 @@ use ReferenceTrack::Controller;
 
 my ($database, @repository_details, $public_release_repository,@creation_details,$starting_version, $public_version, $short_name, $major_release,$minor_release, $update_version, $version, $upload_to_ftp_site);
 
-GetOptions ('database|d=s'    => \$database,
-            'a|add=s{2}'         => \@repository_details,
+GetOptions ('database|d=s'    	   => \$database,
+            'a|add=s{2}'           => \@repository_details,
             'p|public_release=s'   => \$public_release_repository,
             'c|create=s{3}'        => \@creation_details,
             's|starting_version=s' => \$starting_version, #Not needed anymore. Change later.
@@ -114,7 +115,7 @@ elsif(defined($upload_to_ftp_site))
     )->run();
 }
 else
-{
+{ # Create new repository
    ReferenceTrack::Controller->new(
        database_settings => \%database_settings,
        add_repository    => \@repository_details,

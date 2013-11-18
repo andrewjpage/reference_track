@@ -102,5 +102,5 @@ if($update)
 {
 	my $git_fetch = `git fetch --all`;
 	my $git_pull = `git pull origin master`;
-	# Parse error messages ?
+	# TODO: Parse error messages
 }
