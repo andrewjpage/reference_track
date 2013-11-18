@@ -57,7 +57,7 @@ Clone, commit to or update a repository
 USAGE
 ;
 
-$database ||= 'pathogen_reference_track_test';
+$database ||= 'pathogen_reference_track';
 my %database_settings;
 $database_settings{database} = $database ;
 $database_settings{host} = $ENV{VRTRACK_HOST} || 'mcs6';
@@ -88,12 +88,7 @@ if($add)
 		$message = 'MAJOR:'.$message;
 	}
 	my $git_commit_output = `git commit -m "$message"`;
-	# Parse git commit message (check...is this the message that needs to be parsed?)
-	if($git_commit_output =~ m/error/g){
-		print "There appears to be an error with adding your changes. Please contact path-help\@sanger.ac.uk with 
-		       the error message. \n";
-	
-	}
+	#TODO: Parse the commit message and display a user friendly message to the user 
 	my $git_push = `git push origin master`;
 }
 
