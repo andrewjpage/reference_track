@@ -10,7 +10,6 @@ ReferenceTrack::Controller->new(
     add_repository   => \@repository_details,
     public_release   => $public_release_repository,
     creation_details => \@creation_details,
-    starting_version => $starting_version
   )->run();
   
 =cut
@@ -24,11 +23,14 @@ use ReferenceTrack::Repository::PublicRelease;
 has 'database_settings' => ( is => 'ro', isa => 'HashRef', required => 1);
 has 'add_repository'    => ( is => 'ro', isa => 'ArrayRef');
 has 'public_release'    => ( is => 'rw', isa => 'Str');
+has 'public_version'	=> ( is => 'ro', isa => 'Str');
 has 'major_release'     => ( is => 'rw', isa => 'Str');
 has 'minor_release'     => ( is => 'rw', isa => 'Str');
+has 'update_version'    => ( is => 'rw', isa => 'Str');
+has 'version'    		=> ( is => 'rw', isa => 'Str');
 has 'short_name'        => ( is => 'ro', isa => 'Str');
 has 'creation_details'  => ( is => 'ro', isa => 'ArrayRef');
-has 'starting_version'  => ( is => 'ro', isa => 'Str', default => "0.1");
+has 'starting_version'  => ( is => 'ro', isa => 'Str', default => "1.1");
 has 'upload_to_ftp_site' => ( is => 'rw', isa => 'Str');
 
 has '_repository_management' => ( is => 'ro', lazy => 1, builder => '_build__repository_management');
@@ -61,6 +63,11 @@ sub run
   if(defined($self->major_release))
   {
     $self->_make_major_release();
+  }
+  
+  if(defined($self->update_version))
+  {
+    $self->_update_version();
   }
 
   if(defined($self->public_release))
@@ -111,7 +118,8 @@ sub _make_publically_released
     query             => $self->public_release,
     );
   ReferenceTrack::Repository::PublicRelease->new(
-    repository_search_results => $repository_search
+    repository_search_results => $repository_search,
+    public_version => $self->public_version,
   )->flag_all_as_publically_released();
 }
 
@@ -137,6 +145,18 @@ sub _make_minor_release
   ReferenceTrack::Repository::PublicRelease->new(
     repository_search_results => $repository_search
   )->flag_all_as_minor_release();
+}
+
+sub _update_version
+{
+  my($self, $version) = @_;
+  my $repository_search = ReferenceTrack::Repository::Search->new(
+    database_settings => $self->database_settings,
+    query             => $self->update_version,
+    );
+  ReferenceTrack::Repository::PublicRelease->new(
+    repository_search_results => $repository_search
+  )->_flag_all_with_specified_version($self->version);
 }
 
 no Moose;

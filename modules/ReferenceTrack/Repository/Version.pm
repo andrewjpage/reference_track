@@ -19,6 +19,7 @@ use ReferenceTrack::Repository::Types;
 
 has 'version_number' => ( is => 'ro', isa => 'ReferenceTrack::Repository::Version::Number',  required => 1);
 
+# next minor version increment
 sub next_version
 {
   my($self) = @_;
@@ -37,11 +38,12 @@ sub next_version
   return sprintf("%d.%d", $major_version, $minor_version +1);
 }
 
+# next major version increment
 sub next_major_version
 {
   my($self) = @_;
   
-  return sprintf("%d", int($self->version_number) +1);
+  return sprintf("%d.%d", int($self->version_number) +1, 1); # New version for the reference, and we say that this annotation is version 1 for this new reference
 }
 
 sub version_regex

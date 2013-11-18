@@ -20,7 +20,7 @@ use ReferenceTrack::Repository::Version;
 use ReferenceTrack::Repository::Git::Instance;
 
 # input
-has 'repository'         => ( is => 'ro', isa => 'ReferenceTrack::Schema::Result::Repositories', required => 1);
+has 'repository'         => ( is => 'ro', isa => 'ReferenceTrack::Schema::Result::Repositories', required => 0);
 
 # output
 has 'versions'           => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build_versions');      
@@ -39,7 +39,7 @@ sub latest_version
    }
    else
    {
-     return "0.1";
+     return "1.0"; #Start with X.0. The 0 will be incremented to a 1 by the post-commit hook after the initial commit
    }
 }
 

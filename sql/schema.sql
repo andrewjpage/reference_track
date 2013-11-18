@@ -12,6 +12,7 @@ CREATE TABLE `repositories` (
 CREATE TABLE `version_visibility` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `version` varchar(255) DEFAULT NULL,
+  `public_version` varchar(255) DEFAULT NULL,
   `visible_on_ftp_site` tinyint(2) NOT NULL DEFAULT '0',
   `repository_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),

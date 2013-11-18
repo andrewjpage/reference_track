@@ -1,0 +1,49 @@
+#!/usr/bin/env perl
+#
+# This hook script is called after a successful
+# commit is made.
+# When a user commits, create a new branch with a (minor)
+# update to version number, push and change back to master branch.
+# If the user specifies the word 'MAJOR' at the start of the commit message,
+# do the same as above but with a major update to version number.
+# In both cases, update the database too.
+
+
+use ReferenceTrack::Repository::Git::Versions;
+use ReferenceTrack::Repository::Version;
+use ReferenceTrack::Repository::Git::Instance;
+use ReferenceTrack::Repository::Search;
+
+# Determine if it's a major change 
+
+my $commit_message = `git log -1 --pretty=%B`;
+my $type_of_version_change = "next_version";
+my $type_of_release = "--update_version";
+if($commit_message =~ m/^MAJOR.*/){
+	$type_of_version_change = "next_major_version";
+}
+
+my $location = `git config --get remote.origin.url`;
+chomp($location);
+
+my $git_instance = ReferenceTrack::Repository::Git::Instance->new( location => $location );
+my $repository = ReferenceTrack::Repository::Git::Versions->new( _git_instance_obj => $git_instance );
+
+# Get the next version number
+my $next_version = ReferenceTrack::Repository::Version->new(version_number => $repository->latest_version())->$type_of_version_change;
+
+# Create a branch with the next version number and change back to master
+my $create_new_branch = `git checkout -b $next_version`; 
+my $push = `git push origin $next_version`;
+my $change_back_to_master = `git checkout master`;
+
+# Update the version details in the database
+my $repo_name = `basename \`git rev-parse --show-toplevel\``;
+chomp($repo_name);
+$repo_name =~ s/_/ /g;
+
+my $command = "reference_track_management.pl  $type_of_release '$repo_name' --version $next_version --database pathogen_reference_track_test";
+#print $command, "\n";
+`$command`;
+
+

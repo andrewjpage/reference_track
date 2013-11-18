@@ -23,6 +23,17 @@ extends 'ReferenceTrack::Repository::Common';
 has 'repository_root'  => ( is => 'ro', isa => 'Str', default => '/nfs/pathnfs02/references');
 
 
+=head2 add
+
+  Arg [1]    : name of repository
+  Arg [2]    : location of the reposityr
+  Arg [3]	 : the short name of the repository e.g. Pf3D7
+  Example    : $repository_management->add($self->add_repository->[0], $self->add_repository->[1], $self->short_name);
+  Description: Adds the details of a repository to the database containing meta data
+  Returntype : 
+
+=cut
+
 sub add
 {
   my($self, $name, $repository_uri, $short_name) = @_;
@@ -35,6 +46,20 @@ sub add
   ReferenceTrack::Repository::Exceptions::NameExists->throw(error => $name." exists in the database already" ) if( $repository->name_exists );
   $repository->create();
 }
+
+
+=head2 create
+
+  Arg [1]    : genus
+  Arg [2]    : subspecies
+  Arg [3]	 : strain
+  Arg [4]	 : starting version
+  Arg [5]	 : short name
+  Example    : repository_management->create($self->creation_details->[0],$self->creation_details->[1],$self->creation_details->[2] ,$self->starting_version, $self->short_name);
+  Description: create a new repository and add information to the database
+  Returntype : 
+
+=cut
 
 sub create
 {

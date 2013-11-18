@@ -15,9 +15,14 @@ package ReferenceTrack::Repository::Clone;
 use Moose;
 use ReferenceTrack::Repository::Search;
 use Git::Repository;
+use File::Copy;
+use Cwd;
+use Cwd 'abs_path';
 
-has 'repository_search_results' => ( is => 'ro', isa => 'ReferenceTrack::Repository::Search',  required   => 1 );
-has '_repositories'             => ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__repositories');
+has 'repository_search_results' 		=> ( is => 'ro', isa => 'ReferenceTrack::Repository::Search',  required   => 1 );
+has '_repositories'             		=> ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__repositories');
+has 'post_commit_hook'					=> ( is => 'ro', isa => 'Str', default => '/software/pathogen/projects/reference_track/hooks/post-commit');
+has 'pre_commit_hook'					=> ( is => 'ro', isa => 'Str', default => '/software/pathogen/projects/reference_track/hooks/pre-commit');
 
 sub _build__repositories
 {
@@ -39,6 +44,16 @@ sub clone
    for my $repository_location (@{$self->_repositories})
    {
      Git::Repository->run( clone => $repository_location );
+    
+     # Also copy over the git hook file to the right directory
+     # and make it executable by all
+     $repository_location =~ m/.*\/(.*)\.git$/;
+     my $directory_name = $1;
+     my $path = getcwd()."/".$directory_name."/".".git/hooks/";
+     copy($self->post_commit_hook, $path);
+     copy($self->pre_commit_hook, $path);
+     `chmod a+x $path."/post-commit"`;
+     `chmod a+x $path."/pre-commit"`;
    }
 }
 no Moose;

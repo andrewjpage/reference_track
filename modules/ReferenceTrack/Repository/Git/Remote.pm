@@ -22,7 +22,7 @@ use File::Path qw(make_path remove_tree);
 has 'root'      => (is => 'rw', isa => 'Str');
 has 'name'      => (is => 'rw', isa => 'Str');
 has 'location'  => (is => 'rw', isa => 'Str', required => 1);
-has 'starting_version'  => (is => 'rw', isa => 'Str', default => "0.1");
+has 'starting_version'  => (is => 'rw', isa => 'Str', default => "1.1"); #Version comprises of X.Y where X if the version of the reference, and Y is the version of the annotation. For anything new, we start with 1.1
 
 # internal variables
 has 'full_path' => (is => 'rw', isa => 'Str', lazy => 1, builder => '_build_full_path');
