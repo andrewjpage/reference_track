@@ -24,7 +24,7 @@ for my $gff_file (@files){
 	if($gff_file =~ /\.gff$/ or $gff_file =~ /\.gff3$/){
 		push(@checked_files, $gff_file);
 	}else{
-		print "Can only accept unzipped GFF files and they must have a .gff/.gff3 extension in the filename.\n";
+		print "$gff_file: Can only accept unzipped GFF files and they must have a .gff/.gff3 extension in the filename.\n";
 		exit 1;
 	
 	}
