@@ -19,7 +19,7 @@ use Cwd 'abs_path';
 
 
 has 'file_name' => ( is => 'ro', isa => 'Str',  required   => 1 );
-has 'in_situ' => ( is => 'ro', isa => 'Bool',  default  => 1   );
+has 'in_situ' => ( is => 'ro', isa => 'Bool',  default  => 1   ); # If 0, print to std output
 
 
 sub add_or_update_version
@@ -34,8 +34,10 @@ sub add_or_update_version
     
     open (my $fh, "<", $self->file_name) or die "Could not open file $self->file_name: $!";
 	
+	# Essentially we create a temporary file and copy over all the lines (inserting the new comment line)
+	# This is not efficient for large files
 	my $tmpfh = "";
-	my $temp_file = abs_path."/temp_file.gff";
+	my $temp_file = abs_path($self->file_name)."/temp_file.gff";
 	if($self->in_situ){
 		open ($tmpfh, ">", $temp_file) or die "Could not open file $temp_file: $!";
 	}
@@ -44,7 +46,7 @@ sub add_or_update_version
 	
 	while (my $line = <$fh>){
     
-    	 # If there is a verion comment already, or if we've reached the feature lines and haven't come across 
+    	 # If there is a version comment already, or if we've reached the feature lines and haven't come across 
      	# a version comment, then lets add one.
      	if ($line =~ /^##internal-version/) {
      		$seen_version = "true";
@@ -54,12 +56,12 @@ sub add_or_update_version
      	} elsif ($line !~ /^##/ and $seen_version eq "false") {
      		$seen_version = "true";
      		print $tmpfh "##internal-version $version\n"; #Line with new version number
-     	}
-     	print $tmpfh $line;
+     	} 
+     	print $tmpfh $line; #Copy over all the other lines
 	}
 	
 	move($temp_file, $self->file_name);
-	unlink(
+	unlink($temp_file);
 }
 
 no Moose;
