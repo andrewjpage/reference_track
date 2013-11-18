@@ -34,7 +34,7 @@ GetOptions ('database|d=s'    	   => \$database,
             'a|add=s{2}'           => \@repository_details,
             'p|public_release=s'   => \$public_release_repository,
             'c|create=s{3}'        => \@creation_details,
-            's|starting_version=s' => \$starting_version, #Not needed anymore. Change later.
+            's|starting_version=s' => \$starting_version, #Now we default to 1.0, so there's no need to specify this explicitly
             'v|public_version=s'   => \$public_version,
             'n|short_name=s'       => \$short_name,
             'm|major_release=s'    => \$major_release,
@@ -51,12 +51,10 @@ Query the reference tracking system
 
 reference_track_management.pl --add "My repo name" git://example.com/example.git
 reference_track_management.pl --create Plasmodium falciparum 3D7 --short_name PF3D7
-reference_track_management.pl --create Plasmodium falciparum 3D7 --starting_version 0.3 --short_name PF3D7
 
 reference_track_management.pl --public_release "3D7" --public_version 4.0
 reference_track_management.pl --major_release "3D7"
 reference_track_management.pl --minor_release "3D7"
-reference_track_management.pl --update_version "3D7" --version 3.1
 
 reference_track_management.pl --upload_to_ftp_site ""
 reference_track_management.pl --upload_to_ftp_site "3D7"
