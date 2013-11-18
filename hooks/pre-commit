@@ -18,7 +18,7 @@ my @files = (`git diff-index --cached --name-only HEAD`).split("\n");
 # 2. Do not accept zipped files (TODO: Add support for zipped files)
 my @checked_files;
 for my $gff_file (@files){
-	if($gff_file =~ /.gff^/ or $gff_file =~ /.gff3^/){
+	if($gff_file =~ /.gff$/ or $gff_file =~ /.gff3$/){
 		push(@checked_files, $gff_file);
 	}else{
 		print "Can only accept unzipped GFF files and they must have a .gff/.gff3 extension in the filename.\n";
