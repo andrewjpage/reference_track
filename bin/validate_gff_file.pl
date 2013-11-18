@@ -4,6 +4,8 @@ package ReferenceTrack::Bin::ValidateGFFFile;
 # PODNAME: validate_gff_file
 =head1 SYNOPSIS
 
+** NOW REDUNDANT AS WE HAVE OUR OWN VALIDATOR THAT IS RUN ON COMMIT (18 Nov 2013)
+
 Given a gff file, this script will run the GMOD validator on it
 Usage: validate_gff_file [options]
 	

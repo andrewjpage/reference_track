@@ -4,7 +4,9 @@ package ReferenceTrack::Bin::NightlyBuilder;
 # PODNAME: nightly_builder
 =head1 SYNOPSIS
 
+** NOW REDUNDANT AS WE HAVE OUR OWN VALIDATOR THAT IS RUN ON COMMIT (18 Nov 2013)
 perl bin/nightly_builder.pl --database=pathogen_reference_track
+
    
 =cut
 

@@ -1,6 +1,7 @@
 =head1 NAME
 
 EmailSender - Manages the construction and sending of emails when there are errors in the annotation files
+Can be used if we decide to run the GFF validator on a nightly basis, emailing users if there are errors
 
 =head1 SYNOPSIS
 

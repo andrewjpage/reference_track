@@ -1,5 +1,6 @@
 =head1 GFFValidator
 
+** NOW REDUNDANT AS WE HAVE OUR OWN VALIDATOR THAT IS RUN ON COMMIT (18 Nov 2013)
 GFFValidator - Wrapper around the GMOD GFF validator, and should also eventually include any extra GFF checks 
 
 =head1 SYNOPSIS
