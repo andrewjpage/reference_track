@@ -11,7 +11,7 @@ use File::Basename;
 use Bio::GFFValidator::GFFValidator;
 
 # Get the list of files changed/added
-my @files = (`git diff-index --cached --name-only HEAD`).split("\n");
+my @files = split('\n',`git diff-index --cached --name-only HEAD`);
 
 # Do some basic sanity checks
 # 1. Only care about GFF files
