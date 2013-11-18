@@ -21,8 +21,8 @@ use Cwd 'abs_path';
 
 has 'repository_search_results' 		=> ( is => 'ro', isa => 'ReferenceTrack::Repository::Search',  required   => 1 );
 has '_repositories'             		=> ( is => 'ro', isa => 'Maybe[ArrayRef]', lazy => 1, builder => '_build__repositories');
-has 'post_commit_hook'					=> ( is => 'ro', isa => 'Str', default => '/nfs/users/nfs_n/nds/Git_projects/reference_track/hooks/post-commit');
-has 'pre_commit_hook'					=> ( is => 'ro', isa => 'Str', default => '/nfs/users/nfs_n/nds/Git_projects/reference_track/hooks/pre-commit');
+has 'post_commit_hook'					=> ( is => 'ro', isa => 'Str', default => '/software/pathogen/projects/reference_track/hooks/post-commit');
+has 'pre_commit_hook'					=> ( is => 'ro', isa => 'Str', default => '/software/pathogen/projects/reference_track/hooks/pre-commit');
 
 sub _build__repositories
 {
