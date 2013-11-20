@@ -40,7 +40,7 @@ GetOptions ('database|d=s'    => \$database, # Only exposed to developers for te
 );
 
 
-(($query && $clone) || ($add && $message) || !$help) or die <<USAGE;
+(!$help) or die <<USAGE; 
 Usage: $0 [options]
 
 Clone, commit to or update a repository
@@ -69,6 +69,10 @@ $database_settings{password} = $ENV{VRTRACK_PASSWORD};
 # Clone the repository (and copy over the git hook file)
 if($clone)
 {
+	if(not defined($query)) {
+		die "No query (repository name) specified. See reference_track.pl -h for usage."
+	}
+
 	my $repository_search = ReferenceTrack::Repository::Search->new(
   		database_settings => \%database_settings,
   		query             => $query,
@@ -83,16 +87,25 @@ if($clone)
 # Run the git add/rm and git commit commands
 if($add)
 {
-	# Add any new or modified files
-	my $git_add_output = `git add .`;
+
+	if(not defined($message)){
+                die "No message specified. See reference_track.pl -h for usage."
+        }
+
+	# Add any new or modified files, remove deleted files
+	`git add -u`; # Does not add new files, so we have to do the git add below
+	`git add .`;
+	
 	if($major){
 		$message = 'MAJOR:'.$message;
 	}
-	# Remove any deleted files
-	my $git_rm_output = `git status | awk '/deleted/ {print $3}' | xargs git rm`;
-	my $git_commit_output = `git commit -m "$message"`;
+
+	# Run git commit
+	`git commit -m "$message"`;
 	#TODO: Parse the commit message and display a user friendly message to the user 
-	my $git_push = `git push origin master`;
+	
+	# Git push
+	`git push origin master`;
 }
 
 # Run git fetch and git pull 
