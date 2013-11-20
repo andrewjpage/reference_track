@@ -80,13 +80,16 @@ if($clone)
   	)->clone();  
 }
 
-# Run the git add and git commit commands
+# Run the git add/rm and git commit commands
 if($add)
 {
+	# Add any new or modified files
 	my $git_add_output = `git add .`;
 	if($major){
 		$message = 'MAJOR:'.$message;
 	}
+	# Remove any deleted files
+	my $git_rm_output = `git status | awk '/deleted/ {print $3}' | xargs git rm`;
 	my $git_commit_output = `git commit -m "$message"`;
 	#TODO: Parse the commit message and display a user friendly message to the user 
 	my $git_push = `git push origin master`;
