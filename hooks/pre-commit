@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# This hook script runs the GFF validator on the files that are being committed.
+# This hook script runs the GFF validator on the GFF files that are being committed.
 # It is called by "git commit" with no arguments.  The hook should
 # exit with a non-zero status after issuing an appropriate message if
 # it wants to stop the commit.
@@ -10,32 +10,38 @@ use Cwd;
 use File::Basename;
 use Bio::GFFValidator::GFFValidator;
 
-# Get the list of files changed/added
-my @files = split('\n',`git diff-index --cached --name-only HEAD`);
+# Get the list of files in current working directory
+opendir (DIR, getcwd()) or die $!;
+my @files;
+while (my $file = readdir(DIR)) {
+	if(-f $file){
+		push (@files, $file);
+	}
+}
 
-# Do some basic sanity checks
+
+# Do some basic sanity checks on the files
 # 1. Only care about GFF files
 # 2. Do not accept zipped files (TODO: Add support for zipped files)
+# 3. Only accept one GFF file per genome
+
 my @checked_files;
+
 for my $gff_file (@files){
-	if($gff_file eq '0'){ # Sometimes the above command returns a 0
-		next;
-	}
+
 	if($gff_file =~ /\.gff$/ or $gff_file =~ /\.gff3$/){
 		push(@checked_files, $gff_file);
 	}else{
-		print "$gff_file: Can only validate unzipped GFF files and they must have a .gff/.gff3 extension in the filename.\n";
+		print "$gff_file: Not validating. We only validate unzipped GFF files (.gff and .gff3).\n";
 		#exit 1; #Since this system will also be used for reference (i.e. FASTA files) we cannot die here
 	
 	}
 }
 
-# 3. We only accept one GFF file per genome. This may change in the future
 if( scalar(@checked_files) > 1 ){
 	print "Can only accept one GFF file per genome at the moment. Please concatenate your files.\n";
 	exit 1;
 }
-
 
 
 for my $changed_file (@checked_files) { # Yes, a for loop is used here even though we only anticipate one file
