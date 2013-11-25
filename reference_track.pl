@@ -131,6 +131,7 @@ if($list){
 	my $organism_names = $repository->find_all_names();
   	print "Available repositories: \n";
   	print join ("\n", sort(@$organism_names));
+  	print "\n";
 
 
 
