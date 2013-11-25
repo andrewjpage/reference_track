@@ -42,7 +42,7 @@ my $repo_name = `basename \`git rev-parse --show-toplevel\``;
 chomp($repo_name);
 $repo_name =~ s/_/ /g;
 
-my $command = "reference_track_management.pl  $type_of_release '$repo_name' --version $next_version --database pathogen_reference_track_test";
+my $command = "reference_track_management.pl  $type_of_release '$repo_name' --version $next_version --database pathogen_reference_track";
 #print $command, "\n";
 `$command`;
 

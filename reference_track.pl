@@ -27,23 +27,24 @@ use Getopt::Long;
 use ReferenceTrack::Repository::Search;
 use ReferenceTrack::Repository::Clone;
 
-my ($database, $query, $clone, $add, $message, $major, $update, $help);
+my ($database, $query, $clone, $add, $message, $major, $update, $list, $help);
 
 GetOptions ('database|d=s'    => \$database, # Only exposed to developers for testing
             'query|q=s'       => \$query,
             'clone|c'         => \$clone,
             'add|a'			  => \$add,
-            'message|m=s'	      => \$message,
+            'message|m=s'	  => \$message,
             'major'			  => \$major,
             'update|u'		  => \$update,
+            'list|l'		  => \$list,
             'help|h'		  => \$help,
 );
 
 
-(($query && $clone) || ($add && $message) || !$help) or die <<USAGE;
+(!$help) or die <<USAGE; 
 Usage: $0 [options]
 
-Clone, commit to or update a repository
+Clone, commit to or update a repository, or list all available repositories
 
  Options:
      -q  	The name of the repository to look up. It performs a wildcard search '%repo_name%'
@@ -52,12 +53,13 @@ Clone, commit to or update a repository
      -m  	Short description about the changes made to the file
      -major	Can be used with the -a option to indicate a major change
      -u		Update my files with any changes other people may have made to it
+     -l		List all available repositories
      -h		Help
 
 USAGE
 ;
 
-$database ||= 'pathogen_reference_track_test';
+$database ||= 'pathogen_reference_track';
 my %database_settings;
 $database_settings{database} = $database ;
 $database_settings{host} = $ENV{VRTRACK_HOST} || 'mcs6';
@@ -69,6 +71,10 @@ $database_settings{password} = $ENV{VRTRACK_PASSWORD};
 # Clone the repository (and copy over the git hook file)
 if($clone)
 {
+	if(not defined($query)) {
+		die "No query (repository name) specified. See reference_track.pl -h for usage."
+	}
+
 	my $repository_search = ReferenceTrack::Repository::Search->new(
   		database_settings => \%database_settings,
   		query             => $query,
@@ -80,21 +86,28 @@ if($clone)
   	)->clone();  
 }
 
-# Run the git add and git commit commands
+# Run the git add/rm and git commit commands
 if($add)
 {
-	my $git_add_output = `git add .`;
+
+	if(not defined($message)){
+                die "No message specified. See reference_track.pl -h for usage."
+        }
+
+	# Add any new or modified files, remove deleted files
+	`git add -u`; # Does not add new files, so we have to do the git add below
+	`git add .`;
+	
 	if($major){
 		$message = 'MAJOR:'.$message;
 	}
-	my $git_commit_output = `git commit -m "$message"`;
-	# Parse git commit message (check...is this the message that needs to be parsed?)
-	if($git_commit_output =~ m/error/g){
-		print "There appears to be an error with adding your changes. Please contact path-help\@sanger.ac.uk with 
-		       the error message. \n";
+
+	# Run git commit
+	`git commit -m "$message"`;
+	#TODO: Parse the commit message and display a user friendly message to the user 
 	
-	}
-	my $git_push = `git push origin master`;
+	# Git push
+	`git push origin master`;
 }
 
 # Run git fetch and git pull 
@@ -103,4 +116,23 @@ if($update)
 	my $git_fetch = `git fetch --all`;
 	my $git_pull = `git pull origin master`;
 	# TODO: Parse error messages
+}
+
+# List all available repositories
+if($list){
+	my $reference_database = ReferenceTrack::Database->new(
+  		database_settings     => \%database_settings,
+	);
+
+	my $repository = ReferenceTrack::Repositories->new(
+  		_dbh     => $reference_database->ro_dbh,
+	);
+	
+	my $organism_names = $repository->find_all_names();
+  	print "Available repositories: \n";
+  	print join ("\n", sort(@$organism_names));
+
+
+
+
 }
