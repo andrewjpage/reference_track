@@ -40,24 +40,11 @@ GetOptions ('database|d=s'    => \$database, # Only exposed to developers for te
             'help|h'		  => \$help,
 );
 
+# Some validation of user arguments
+if ($help || ((!$clone and !$add and !$update and !$list))) {
+	_print_usage_and_die();
+}
 
-(!$help) or die <<USAGE; 
-Usage: $0 [options]
-
-Clone, commit to or update a repository, or list all available repositories
-
- Options:
-     -q  	The name of the repository to look up. It performs a wildcard search '%repo_name%'
-     -c  	Take a copy of the repository and put it in the current directory
-     -a  	Add my changes to the system. You must also enter a short message about the changes using the -m option
-     -m  	Short description about the changes made to the file
-     -major	Can be used with the -a option to indicate a major change
-     -u		Update my files with any changes other people may have made to it
-     -l		List all available repositories
-     -h		Help
-
-USAGE
-;
 
 $database ||= 'pathogen_reference_track';
 my %database_settings;
@@ -72,7 +59,8 @@ $database_settings{password} = $ENV{VRTRACK_PASSWORD};
 if($clone)
 {
 	if(not defined($query)) {
-		die "No query (repository name) specified. See reference_track.pl -h for usage."
+		print "No query (repository name) specified to copy. \n";
+		_print_usage_and_die();
 	}
 
 	my $repository_search = ReferenceTrack::Repository::Search->new(
@@ -91,7 +79,8 @@ if($add)
 {
 
 	if(not defined($message)){
-                die "No message specified. See reference_track.pl -h for usage."
+                print "No message (-m) specified to describe the changes made. \n";
+		_print_usage_and_die();
         }
 
 	# Add any new or modified files, remove deleted files
@@ -132,8 +121,26 @@ if($list){
   	print "Available repositories: \n";
   	print join ("\n", sort(@$organism_names));
   	print "\n";
+}
 
+sub _print_usage_and_die {
 
+die <<USAGE; 
+Usage: $0 [options]
 
+Clone, commit to or update a repository, or list all available repositories
+
+ Options:
+     -q  	The name of the repository to look up. It performs a wildcard search '%repo_name%'
+     -c  	Take a copy of the repository and put it in the current directory
+     -a  	Add my changes to the system. You must also enter a short message about the changes using the -m option
+     -m  	Short description about the changes made to the file
+     -major	Can be used with the -a option to indicate a major change
+     -u		Update my files with any changes other people may have made to it
+     -l		List all available repositories
+     -h		Help
+
+USAGE
+;
 
 }
