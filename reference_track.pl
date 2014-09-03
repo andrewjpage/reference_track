@@ -26,18 +26,19 @@ use Moose;
 use Getopt::Long;
 use ReferenceTrack::Repository::Search;
 use ReferenceTrack::Repository::Clone;
+use File::Slurp;
 
 my ($database, $query, $clone, $add, $message, $major, $update, $list, $help);
 
 GetOptions ('database|d=s'    => \$database, # Only exposed to developers for testing
             'query|q=s'       => \$query,
             'clone|c'         => \$clone,
-            'add|a'			  => \$add,
-            'message|m=s'	  => \$message,
-            'major'			  => \$major,
-            'update|u'		  => \$update,
-            'list|l'		  => \$list,
-            'help|h'		  => \$help,
+            'add|a'	      => \$add,
+            'message|m=s'     => \$message,
+            'major'	      => \$major,
+            'update|u'	      => \$update,
+            'list|l'	      => \$list,
+            'help|h'	      => \$help,
 );
 
 # Some validation of user arguments
@@ -48,12 +49,9 @@ if ($help || ((!$clone and !$add and !$update and !$list))) {
 
 $database ||= 'pathogen_reference_track';
 my %database_settings;
+my $connection_details = read_file('/software/pathogen/config/reftrack_connection_details');
+%database_settings = %{ eval($connection_details) };
 $database_settings{database} = $database ;
-$database_settings{host} = $ENV{VRTRACK_HOST} || 'mcs6';
-$database_settings{port} = $ENV{VRTRACK_PORT} || 3347;
-$database_settings{ro_user} = $ENV{VRTRACK_RO_USER}  || 'pathpipe_ro';
-$database_settings{rw_user} =  $ENV{VRTRACK_RW_USER} || 'pathpipe_rw';
-$database_settings{password} = $ENV{VRTRACK_PASSWORD};
 
 # Clone the repository (and copy over the git hook file)
 if($clone)
